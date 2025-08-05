@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}{% endblock %} <!-- TODO -->
+
+{% block content %}
+<div class="container">
+    <h1>{{ ticket.title }}</h1>
+    <p>Проект: <a href="{% url 'tickets:project_detail' ticket.project.id %}">{{ ticket.project.name }}</a></p>
+    <p>Статус: {{ ticket.get_status_display }}</p>
+    <p>Приоритет: {{ ticket.get_priority_display }}</p>
+    <p>Тип: {{ ticket.get_type_display }}</p>
+    <p>Создатель: {{ ticket.creator.username }}</p>
+    <p>Исполнитель: {% if ticket.assignee %}{{ ticket.assignee.username }}{% else %}Не назначен{% endif %}</p>
+    <p>Срок выполнения: {% if ticket.due_date %}{{ ticket.due_date }}{% else %}Не установлен{% endif %}</p>
+    
+    <h2>Описание</h2>
+    <p>{{ ticket.description }}</p>
+    
+    <a href="{% url 'tickets:update_ticket' ticket.id %}" class="btn btn-primary">Редактировать</a>
+    
+    <h2>Комментарии</h2>
+    {% for comment in comments %}
+        <div class="card mb-2">
+            <div class="card-body">
+                <h5 class="card-title">{{ comment.author.username }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ comment.created_at }}</h6>
+                <p class="card-text">{{ comment.text }}</p>
+            </div>
+        </div>
+    {% endfor %}
+    
+    <form method="post" action="{% url 'tickets:ticket_detail' ticket.id %}">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <button type="submit" name="add_comment" class="btn btn-primary">Добавить комментарий</button>
+    </form>
+    
+    <h2>Вложения</h2>
+    {% for attachment in attachments %}
+        <div class="card mb-2">
+            <div class="card-body">
+                <h5 class="card-title">{{ attachment.file.name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">
+                    Загружено {{ attachment.uploaded_by.username }} в {{ attachment.uploaded_at }}
+                </h6>
+                <a href="{{ attachment.file.url }}" class="btn btn-primary">Скачать</a>
+            </div>
+        </div>
+    {% endfor %}
+    
+    <form method="post" action="{% url 'tickets:ticket_detail' ticket.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ attachment_form.as_p }}
+        <button type="submit" name="add_attachment" class="btn btn-primary">Прикрепить файл</button>
+    </form>
+</div>
+{% endblock %}

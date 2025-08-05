@@ -1,0 +1,35 @@
+{% load static %}
+<header class="header">
+    <div class="header-container">
+        <div class="header-logo">
+            <a href="#">TaskBoard</a>
+        </div>
+        
+        <nav class="header-nav">
+            <ul class="nav-list">
+                <li class="nav-item"><a href="#">My groups</a></li>
+                <li class="nav-item"><a href="#">My projects</a></li>
+                <li class="nav-item"><a href="#">My tickets</a></li>
+                <li class="nav-item">
+                    <a href="#">
+                        <span class="material-symbols-outlined">add</span>
+                    </a>
+                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item"><a href="#">Profile</a></li>
+                    <li class="nav-item"><a href="#">Logout</a></li>
+                {% else %}
+                    <li class="nav-item"><a href="#">Login</a></li>
+                    <li class="nav-item"><a href="#">Register</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        
+        <div class="mobile-menu-toggle">
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+        </div>
+
+    </div>
+</header>
