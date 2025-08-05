@@ -1,0 +1,41 @@
+body {
+        background-color: #f2f2f2;
+    }
+
+    .form-box {
+        max-width: 400px;
+        margin: 80px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .form-control, .form-control:focus {
+        border-radius: 8px;
+        box-shadow: none;
+    }
+
+    .form-box input.form-control {
+        box-shadow: none;
+        font-size: 0.95rem;
+    }
+
+    .form-box label {
+        font-weight: 500;
+        margin-bottom: 0.4rem;
+    }
+
+    .btn-primary {
+        background-color: blue;
+        border-color: blue;
+        font-weight: bold;
+    }
+
+    ::placeholder {
+        color: rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .form-control::placeholder {
+        color: rgba(0, 0, 0, 0.4) !important;
+    }

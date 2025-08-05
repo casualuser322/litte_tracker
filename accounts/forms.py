@@ -1,17 +1,20 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
-# from .models import TicketUser
+from .models import TicketsUser
 
 
-# class TicketUserCreationForms(UserCreationForm):
-#     email = forms.EmailField(required=True)
+class RegisterForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Enter your password'}))
+    password2 = forms.CharField(label='Confirm your password', widget=forms.PasswordInput(attrs={'placeholder': 'Confirm password'}))
+    profile_image = forms.ImageField(required=False, label='Upload your profile photo')
 
-#     class Meta:
-#         model = TicketUser
-#         fields = ('username', 'email', 'password1', 'password2', 'first_name', 'second_name')
+    class Meta:
+        model = User
+        fields = ('email', 'username')
 
-# class ProfileUpdateForm(forms.ModelForm):
-#     class Meta:
-#         model = TicketUser
-#         fields = ('first_name', 'last_name', 'email', 'phone', 'avatar')
+    def clean_password2(self):
+        if self.cleaned_data.get('password') != self.cleaned_data.get('password2'):
+            raise forms.ValidationError("Passwords don't match")
+        return self.cleaned_data.get('password2')
