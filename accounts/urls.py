@@ -1,5 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 from . import views
 
@@ -15,7 +17,7 @@ urlpatterns = [
         name='logout'
     ),
     # path('register/', views.register, name='register'),
-    path('', view=views.register, name='register'),
+    path('', view=views.register_view, name='register'),
     
     path(
         'password-reset/', 
@@ -38,3 +40,5 @@ urlpatterns = [
         name='password_reset_complete'
     ),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

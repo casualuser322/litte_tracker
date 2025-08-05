@@ -1,34 +1,21 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from django.contrib.auth.decorators import login_required
-# from .forms import TicketUserCreationForms, ProfileUpdateForm
+from .forms import RegisterForm
+from django.contrib.auth.models import User
+from .models import TicketsUser
 
+def register_view(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
 
-# def register(request):
-#     if request.method == 'POST':
-#         form = TicketUserCreationForms(request.POST)
-#         if form.is_valid():
-#             user = form.save()
-#             login(request, user)
-            
-#             return redirect('project_list')
-#     else:
-#         form = TicketUserCreationForms()
-    
-#     return render(request, 'accounts/register.html')
+            profile = user.userprofile
+            profile.profile_image = form.cleaned_data.get('profile_image')
+            profile.save()
 
-# @login_required
-# def profile(request):
-#     if request.method == 'POST':
-#         form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user)
-#         if form.is_valid():
-#             form.save()
-
-#             return redirect('profile')
-#     else:
-#         form = ProfileUpdateForm(isinstance=request.user)
-    
-#     return render(request, 'accounts/profile.html')
-
-def register(request):
-    return render(request, 'accounts/register.html')
+            return redirect('login')
+    else:
+        form = RegisterForm()
+    return render(request, 'accounts/register.html', {'form': form})
