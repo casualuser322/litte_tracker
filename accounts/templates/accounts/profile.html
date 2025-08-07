@@ -1,3 +1,44 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Profile{% endblock %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+{% endblock %}
+
+{% block content%}
+<div class="container">
+    <div class="form-box mx-auto mt-6 p-5 rounded-4 shadow-sm bg-white" style="max-width: 520px;">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- TODO add text like Profile -->
+
+            <div class="mb-4">
+                <input type="email" name="email" class="form-control form-control-lg rounded-3"
+                    placeholder="email" required> <!-- TODO display user's current email -->
+            </div>
+
+            <div class="mb-4">
+                <input type="text" name="username" class="form-control form-control-lg rounded-3"
+                    placeholder="username" required> <!-- TODO display user's current username -->
+            </div>
+            
+            <div class="mb-4">
+                <input type="password" name="password" class="form-control form-control-lg rounded-3"
+                    placeholder="password" required> <!-- TODO display user's current password -->
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">Upload your profile photo</label>
+                <input type="file" name="profile_image" class="form-control rounded-3">
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg fw-bold">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

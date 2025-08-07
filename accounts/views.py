@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import RegisterForm
+from .forms import RegisterForm, SignInForm
 from django.contrib.auth.models import User
 from .models import TicketsUser
 
@@ -19,3 +19,25 @@ def register_view(request):
     else:
         form = RegisterForm()
     return render(request, 'accounts/register.html', {'form': form})
+
+def sigin_view(request):
+    if request.method == 'POST':
+        form = SignInForm(request.POST)
+        if form.is_valid():
+            session_content = form.save()
+            
+            return redirect('project_list')
+    
+    else:
+        form = SignInForm()
+    
+    return render(request, 'accounts/signin.html', {'form': form})
+
+def profile_view(request):
+    if request.method == 'POST':
+        form = 0
+    
+    else:
+        form = 1
+
+    return render(request, 'accounts/profile.html', {'form': form})
