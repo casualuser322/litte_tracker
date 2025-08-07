@@ -18,3 +18,16 @@ class RegisterForm(forms.ModelForm):
         if self.cleaned_data.get('password') != self.cleaned_data.get('password2'):
             raise forms.ValidationError("Passwords don't match")
         return self.cleaned_data.get('password2')
+    
+
+class SignInForm(forms.ModelForm):
+    email = forms.EmailInput(attrs={'placeholder': 'Enter your email..'})
+    password = forms.CharField(
+        label='Enter your password..',
+        widget=forms.PasswordInput(attrs={'placeholder': 'Enter your password..'})
+    )
+
+    class Meta:
+        model = User
+        fields = ('email', 'password')
+    
