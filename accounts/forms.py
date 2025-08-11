@@ -1,33 +1,35 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 from .models import TicketsUser
+from tracker.models import Group, Project, Ticket
 
 
-class RegisterForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Enter your password'}))
-    password2 = forms.CharField(label='Confirm your password', widget=forms.PasswordInput(attrs={'placeholder': 'Confirm password'}))
-    profile_image = forms.ImageField(required=False, label='Upload your profile photo')
-
+class RegisterForm(UserCreationForm):
     class Meta:
-        model = User
-        fields = ('email', 'username')
+        model = TicketsUser
+        fields = (
+            'email', 
+            'username',
+            'first_name',
+            'last_name',
+            'profile_image'
+        )
 
-    def clean_password2(self):
-        if self.cleaned_data.get('password') != self.cleaned_data.get('password2'):
-            raise forms.ValidationError("Passwords don't match")
-        return self.cleaned_data.get('password2')
-    
+class UserUpdatefrom(forms.ModelForm):
+    class Meta:
+        model = TicketsUser
+        fields = (
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'profile_image',
+            'password'
+        )
 
 class SignInForm(forms.ModelForm):
-    email = forms.EmailInput(attrs={'placeholder': 'Enter your email..'})
-    password = forms.CharField(
-        label='Enter your password..',
-        widget=forms.PasswordInput(attrs={'placeholder': 'Enter your password..'})
-    )
-
     class Meta:
-        model = User
-        fields = ('email', 'password')
+        model = TicketsUser
+        fields = ('email', 'password',)
     

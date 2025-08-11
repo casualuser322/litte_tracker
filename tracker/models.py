@@ -3,35 +3,48 @@ from django.utils import timezone
 from django.contrib.auth.models import User, AbstractUser
 
 
-class Project(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
-    created_at = models.DateTimeField(default=timezone.now)
-    owner = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="owned_projects",
-    )
-    members = models.ManyToManyField(User, related_name='projects')
-
-    def __str__(self):
-        return self.title
-
 class Group(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     owner = models.ForeignKey(
-        User,
+        'accounts.TicketsUser',
         on_delete=models.CASCADE,
-        related_name="owned_groups"
+        related_name="owned_groups",
     )    
-
-    members = models.ManyToManyField(User, related_name="groups")
+    members = models.ManyToManyField(
+        'accounts.TicketsUser', 
+        related_name="groups",
+        blank=True
+    )
 
     def __str__(self):
         return self.title
 
+class Project(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    owner = models.ForeignKey(
+        'accounts.TicketsUser',
+        on_delete=models.CASCADE,
+        related_name="owned_projects",
+    )
+    attached_group = models.ForeignKey(
+        Group,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="projects",
+    )
+    members = models.ManyToManyField(
+        'accounts.TicketsUser',
+        related_name='projects',
+        blank=True,
+    )
+
+    def __str__(self):
+        return self.title
 
 class Ticket(models.Model):
     STATUS_CHOICES = [
@@ -81,12 +94,12 @@ class Ticket(models.Model):
         related_name='tickets',
     )
     creator = models.ForeignKey(
-        User,
+        'accounts.TicketsUser',
         on_delete=models.CASCADE,
         related_name='created_tickets',
     )
     assigne = models.ForeignKey(
-        User,
+        'accounts.TicketsUser',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -103,7 +116,7 @@ class Comment(models.Model):
         related_name='comments',
     )
     author = models.ForeignKey(
-        User,
+        'accounts.TicketsUser',
         on_delete=models.CASCADE,
     )
     text = models.TextField(blank=False)
@@ -120,17 +133,10 @@ class Attachment(models.Model):
     )
     attached_file = models.FileField(upload_to='ticket_attachments')
     uploaded_by = models.ForeignKey(
-        User,
+        'accounts.TicketsUser',
         on_delete=models.CASCADE,
     )
     uploaded_at = models.DateTimeField(default=timezone.now)
     
     def __str__(self):
         return f"Attachment to {self.ticket.title}"
-
-class TrackerUser():
-    pass
-# class AuthorisedUser(AbstractUser):
-#     name = models.CharField(max_length=100)
-#     email = models.EmailField(verbose_name="User email address", unique=True)
-#     password = models.
