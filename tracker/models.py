@@ -16,7 +16,22 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
-    
+
+class Group(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="owned_groups"
+    )    
+
+    members = models.ManyToManyField(User, related_name="groups")
+
+    def __str__(self):
+        return self.title
+
 
 class Ticket(models.Model):
     STATUS_CHOICES = [
