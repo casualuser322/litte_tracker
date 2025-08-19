@@ -14,7 +14,7 @@ class Group(models.Model):
     )    
     members = models.ManyToManyField(
         'accounts.TicketsUser', 
-        related_name="groups",
+        related_name="attached_groups",
         blank=True
     )
 
