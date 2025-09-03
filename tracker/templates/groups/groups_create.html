@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Groups{% endblock %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="{% static 'tracker/css/groups.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="group-create-container">
+  <h3 class="mb-4 text-center">Create a Group</h3>
+  <form>
+    <div class="mb-3">
+      <input type="text" class="form-control" placeholder="Enter the name of the group.." required>
+    </div>
+
+    <div class="mb-3">
+      <textarea class="form-control" rows="4" placeholder="Write group's description here.."></textarea>
+    </div>
+
+    <div class="mb-3 position-relative">
+        <input type="text" class="form-control" id="emailInput" placeholder="Add your co-workers' email.."
+            data-autocomplete-url="{% url 'user_email_autocomplete' %}">
+        <ul class="list-group position-absolute w-100" 
+            id="suggestionsBox" style="z-index:1000; display:none;"></ul>
+    </div>
+
+    <div id="selectedEmails" class="d-flex flex-wrap gap-2"></div>
+    <input type="hidden" name="emails" id="emailsHidden">
+
+    <script src="{% static 'tracker/js/email_check.js' %}"></script>
+
+    <div class="mb-3">
+      <label for="groupLogo" class="form-label">Group logo</label>
+      <div class="upload-box" onclick="document.getElementById('groupLogo').click();">
+        Add logo to your group here<br>
+        <small>(click to upload)</small>
+      </div>
+      <input type="file" id="groupLogo" class="form-control d-none">
+    </div>
+
+    <div class="text-end">
+      <button type="submit" class="btn btn-primary">Create group</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

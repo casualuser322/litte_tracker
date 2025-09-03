@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Groups{% endblock %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="{% static 'tracker/css/groups.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row align-items-center mb-3">
+  <div class="col-3">
+    <a href="{% url 'create_group' %}" class="btn create-btn">
+      <span class="plus">+</span>
+      <span class="label">Create group</span>
+    </a>
+  </div>
+
+  <div class="col-6 text-center">
+    <h3 class="mb-0">Groups</h3>
+  </div>
+
+  <div class="col-3 text-end">
+    <input type="text" class="search-bar" placeholder="search">
+  </div>
+</div>
+
+    <!-- TODO add managment buttons to owned groups -->
+    <!-- TODO maybe separate blocks with owned groups and regular -->
+
+    <!-- TODO ofc these are 4 example. fix -->
+    <div class="md-0" style="margin-top: 40px;">
+        <div class="group-card">
+            <img src="https://via.placeholder.com/60" alt="group">
+            <div class="group-info">name of your company/group</div>
+            <small class="text-muted">number of members</small>
+        </div>
+
+        <div class="group-card">
+            <img src="https://via.placeholder.com/60" alt="group">
+            <div class="group-info">name of your company/group</div>
+            <small class="text-muted">number of members</small>
+        </div>
+
+        <div class="group-card">
+            <img src="https://via.placeholder.com/60" alt="group">
+            <div class="group-info">name of your company/group</div>
+            <small class="text-muted">number of members</small>
+        </div>
+
+        <div class="group-card">
+            <img src="https://via.placeholder.com/60" alt="group">
+            <div class="group-info">name of your company/group</div>
+            <small class="text-muted">number of members</small>
+        </div>
+    </div>
+</div>
+{% endblock %}
