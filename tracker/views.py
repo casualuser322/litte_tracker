@@ -1,10 +1,46 @@
 from django.contrib import messages
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
+from accounts.models import TicketsUser
 from .models import Attachment, Comment, Project, Ticket
-from .forms import AttachmentForm, CommentForm, ProjectForm, TicketForm
+from .forms import \
+    AttachmentForm, CommentForm, GroupForm, ProjectForm, TicketForm
 
+
+@login_required
+def group_list(request):
+    groups = request.user.groups.all()
+
+    return render(request, 'groups/groups_main.html', {
+        'groups': groups,
+    })
+
+@login_required
+def create_group(request):
+    if request.method == 'POST':
+        form = GroupForm(request.POST)
+        if form.is_valid():
+            group = form.save(commit=False)
+            group.owner = request.user
+            group.save()
+            form.save_m2m()
+            messages.success(request, 'Group is created!')
+            return redirect('group_list')
+    else:
+        form = GroupForm()
+    
+    return render(request, 'groups/groups_create.html', {
+        'form': form,
+    })
+
+def user_email_autocomplete(request):
+    query = request.GET.get("q", "")
+    users = TicketsUser.objects.filter(email__icontains=query)[:10]
+    results = [{"id": u.id, "email": u.email} for u in users]
+
+    return JsonResponse(results, safe=False)
 
 @login_required
 def project_list(request):
@@ -140,4 +176,8 @@ def update_ticket(request, ticket_id):
     })
 
 def index(request):
-    return redirect('project_list')
+    user = request.user
+    if user.is_authenticated:
+        return redirect('group_list')
+    else:
+        return redirect('register')
