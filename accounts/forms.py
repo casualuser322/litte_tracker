@@ -17,18 +17,6 @@ class RegisterForm(UserCreationForm):
             'password2',
         )
 
-
-class UserUpdatefrom(forms.ModelForm):
-    class Meta:
-        model = TicketsUser
-        fields = (
-            'email',
-            'username',
-            'first_name',
-            'last_name',
-            'password'
-        )
-
 class SignInForm(forms.Form):
     email = forms.EmailField(label="Email")
     password = forms.CharField(widget=forms.PasswordInput)
@@ -42,13 +30,22 @@ class UserUpdateForm(forms.ModelForm):
 
     class Meta:
         model = TicketsUser
-        fields = ['email', 'username', 'first_name', 'last_name', 'password', 'profile_image']
+        fields = [
+            'email', 
+            'username', 
+            'first_name', 
+            'last_name', 
+            'password', 
+            'profile_image'
+        ]
 
     def save(self, commit=True):
         user = super().save(commit=False)
         password = self.cleaned_data.get('password')
         if password:
             user.set_password(password)
+        else:
+            password = user.password
         if commit:
             user.save()
         return user
