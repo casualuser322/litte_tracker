@@ -13,8 +13,10 @@
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             
-            <!-- TODO add text like SIGN UP -->
-
+            <h2 class="mb-3 text-center">
+                Sign up
+            </h2>
+            <br>
             <div class="mb-4">
                 <label class="px-1">Email:</label>
                 <input type="email" name="email" class="form-control form-control-lg rounded-3"
@@ -41,7 +43,7 @@
 
             <div class="mb-4">
                 <label class="form-label">Password:</label>
-                <input type="password" name="password" class="form-control form-control-lg rounded-3" 
+                <input type="password" name="password1" class="form-control form-control-lg rounded-3" 
                     placeholder="Enter your password.." required>
             </div>
 
@@ -50,12 +52,7 @@
                 <input type="password" name="password2" class="form-control form-control-lg rounded-3" 
                     placeholder="Confirm your password.." required>
             </div>
-
-            <div class="mb-4">
-                <label class="form-label">Upload your profile photo</label>
-                <input type="file" name="profile_image" class="form-control rounded-3">
-            </div>
-
+            <br>
             <div class="d-grid">
                 <button type="submit" class="btn btn-primary btn-lg fw-bold rounded-3">Sign in</button>
             </div>

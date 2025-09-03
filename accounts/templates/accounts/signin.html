@@ -13,20 +13,23 @@
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <!-- TODO add text like Sign in -->
-
+            <h2 class="mb-3 text-center">
+                Sign in
+            </h2>
+            <br>
             <div class="mb-4">
                 <input type="email" name="email" class="form-control form-control-lg rounded-3" 
                     placeholder="Enter your email.." required>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-2">
                 <input type="password" name="password" class="form-control form-control-lg rounded-3" 
                     placeholder="Enter your password" required>
             </div>
 
-            <!-- TODO add forgot password button-->
-            <!-- TODO add pages for password change -->
+            <div class="text-end mb-4">
+                <a href="#" class="link-primary text-decoration-none">Forgot Password?</a>
+            </div>
 
             <div class="d-grid">
                 <button type="submit" class="btn btn-primary btn-lg fw-bold">Sign in</button>
