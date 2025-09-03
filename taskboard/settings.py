@@ -36,14 +36,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'accounts.apps.AccountsConfig',
-    'tracker.apps.TrackerConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'accounts.apps.AccountsConfig',
+    'tracker.apps.TrackerConfig',
 ]
 
 MIDDLEWARE = [
@@ -90,20 +90,20 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+# AUTH_PASSWORD_VALIDATORS = [
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+#     },
+# ]    # TODO uncomment this and process with ui
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -112,7 +112,7 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_REDIRECT_URL = 'project_list'
 LOGOUT_REDIRECT_URL = 'login'
 
-#AUTH_USER_MODEL = 'accounts.TrackerUser'
+AUTH_USER_MODEL = 'accounts.TicketsUser'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -129,8 +129,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR, 'static']
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

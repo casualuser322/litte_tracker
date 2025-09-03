@@ -1,20 +1,39 @@
 from django import forms 
-from .models import Attachment, Comment, Project, Ticket
+from .models import Attachment, Comment, Group, Project, Ticket
 
+
+class GroupForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = (
+            'title',
+            'description',
+            'owner',
+            'members',
+        )
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 5}),
+            'members': forms.CheckboxSelectMultiple,
+        }
 
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = [
+        fields = (
             'title',
             'description',
+            'owner',
             'members',
-        ]
+        )
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 5}),
+            'members': forms.CheckboxSelectMultiple
+        }
 
 class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
-        fields = [
+        fields = (
             'title',
             'description',
             'status',
@@ -22,7 +41,7 @@ class TicketForm(forms.ModelForm):
             'ticket_type',
             'due_data',
             'assigne',
-        ]
+        )
         widgets = {
             'due_data': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'description': forms.Textarea(attrs={'rows': 4}),
@@ -31,7 +50,7 @@ class TicketForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['text']
+        fields = ('text',)
         widgets = {
             'text': forms.Textarea(attrs={'rows': 3})
         }
@@ -39,4 +58,4 @@ class CommentForm(forms.ModelForm):
 class AttachmentForm(forms.ModelForm):
     class Meta:
         model = Attachment
-        fields = ['attached_file']
+        fields = ('attached_file',)

@@ -11,7 +11,7 @@ def project_list(request):
     projects = request.user.projects.all()
     owned_projects = request.user.owned_projects.all()
 
-    return render(request, 'tickets/project_list.html', {
+    return render(request, 'tracker/project_list.html', {
         'projects': projects,
         'owned_projects': owned_projects,
     })
