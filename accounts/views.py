@@ -6,25 +6,6 @@ from django.contrib.auth import authenticate, login
 from .models import TicketsUser
 from .forms import RegisterForm, SignInForm, UserUpdateForm
 
-class UserUpdateForm(forms.ModelForm):
-    password = forms.CharField(
-        required=False,
-        widget=forms.PasswordInput,
-        label='Password'
-    )
-
-    class Meta:
-        model = TicketsUser
-        fields = ['email', 'username', 'first_name', 'last_name', 'password', 'profile_image']
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        password = self.cleaned_data.get('password')
-        if password:
-            user.set_password(password)
-        if commit:
-            user.save()
-        return user
 
 def register_view(request):
     if request.method == 'POST':
@@ -64,17 +45,32 @@ def signin_view(request):   # TODO process validation ui
 
 def profile_view(request):
     user = request.user
+    if user.is_authenticated:
+        if request.method == "POST":
+            form = UserUpdateForm(request.POST, request.FILES, instance=user)
+            if form.is_valid():
+                user = form.save(commit=False)
+                email = form.cleaned_data.get("email")
+                password = form.cleaned_data.get("password")
+                if password:
+                    user.set_password(password)
+                else:
+                    password = user.password
+                user.save()
+                user = authenticate(request, email=email, password=password)
+                if user is not None:
+                    login(request, user)
+                return redirect("profile")
+        else:
+            form = UserUpdateForm(instance=user)
 
-    if request.method == "POST":
-        form = UserUpdateForm(request.POST, request.FILES, instance=user)
-        if form.is_valid():
-            user = form.save(commit=False)
-            password = form.cleaned_data.get("password")
-            if password:
-                user.set_password(password)
-            user.save()
-            return redirect("profile")
+        return render(request, "accounts/profile.html", {
+            "form": form,
+            "user": user,
+            "email": user.email,
+            "username": user.username,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+        })
     else:
-        form = UserUpdateForm(instance=user)
-
-    return render(request, "accounts/profile.html", {"form": form})
+        return redirect('signin')
