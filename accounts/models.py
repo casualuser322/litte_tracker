@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import \
     User, AbstractUser, PermissionsMixin, BaseUserManager
 
-from tracker.models import Ticket, Project, Group
+from tracker.models import Ticket, Project, TrackerGroup
 
 
 class TicketUserEngine(BaseUserManager):

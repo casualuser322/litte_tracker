@@ -4,15 +4,14 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from accounts.models import TicketsUser
-from .models import Attachment, Comment, Project, Ticket
+from .models import Attachment, Comment, TrackerGroup, Project, Ticket
 from .forms import \
     AttachmentForm, CommentForm, GroupForm, ProjectForm, TicketForm
 
 
 @login_required
 def group_list(request):
-    groups = request.user.groups.all()
-
+    groups = request.user.owned_groups.all() # TODO add member groups
     return render(request, 'groups/groups_main.html', {
         'groups': groups,
     })
@@ -25,15 +24,32 @@ def create_group(request):
             group = form.save(commit=False)
             group.owner = request.user
             group.save()
+            group.members.add(request.user)
             form.save_m2m()
             messages.success(request, 'Group is created!')
             return redirect('group_list')
+        else:
+            print(form.errors)
     else:
         form = GroupForm()
     
     return render(request, 'groups/groups_create.html', {
         'form': form,
     })
+
+@login_required
+def group_view(request, group_id):
+    try:
+        group = TrackerGroup.objects.get(id=group_id)
+        projects = group.projects.all()
+        members = group.members.all()
+        return render(request, "group_detail.html", {
+            "group": group,
+            "projects": projects,
+            "members": members,
+        })
+    except:
+        return redirect('group_list')
 
 def user_email_autocomplete(request):
     query = request.GET.get("q", "")

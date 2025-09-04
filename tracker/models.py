@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User, AbstractUser
 
 
-class Group(models.Model):
+class TrackerGroup(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(default=timezone.now)
@@ -31,7 +31,7 @@ class Project(models.Model):
         related_name="owned_projects",
     )
     attached_group = models.ForeignKey(
-        Group,
+        TrackerGroup,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

@@ -10,20 +10,21 @@
 {% block content %}
 <div class="group-create-container">
   <h3 class="mb-4 text-center">Create a Group</h3>
-  <form>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
     <div class="mb-3">
-      <input type="text" class="form-control" placeholder="Enter the name of the group.." required>
+      <input type="text" class="form-control" name="title"  placeholder="Enter the name of the group..">
     </div>
 
     <div class="mb-3">
-      <textarea class="form-control" rows="4" placeholder="Write group's description here.."></textarea>
+      <textarea class="form-control" rows="4" name="description" placeholder="Write group's description here.."></textarea>
     </div>
 
     <div class="mb-3 position-relative">
-        <input type="text" class="form-control" id="emailInput" placeholder="Add your co-workers' email.."
-            data-autocomplete-url="{% url 'user_email_autocomplete' %}">
-        <ul class="list-group position-absolute w-100" 
-            id="suggestionsBox" style="z-index:1000; display:none;"></ul>
+      <input type="text" class="form-control" id="emailInput" placeholder="Add your co-workers' email.."
+        data-autocomplete-url="{% url 'user_email_autocomplete' %}">
+      <ul class="list-group position-absolute w-100" 
+        id="suggestionsBox" style="z-index:1000; display:none;"></ul>
     </div>
 
     <div id="selectedEmails" class="d-flex flex-wrap gap-2"></div>
@@ -37,7 +38,7 @@
         Add logo to your group here<br>
         <small>(click to upload)</small>
       </div>
-      <input type="file" id="groupLogo" class="form-control d-none">
+      <input type="file" id="groupLogo" class="form-control d-none" >
     </div>
 
     <div class="text-end">

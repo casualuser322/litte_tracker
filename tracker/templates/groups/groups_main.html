@@ -26,34 +26,18 @@
   </div>
 </div>
 
-    <!-- TODO add managment buttons to owned groups -->
-    <!-- TODO maybe separate blocks with owned groups and regular -->
+  <!-- TODO add managment buttons to owned groups -->
+  <!-- TODO maybe separate blocks with owned groups and regular -->
+  <div class="md-0" style="margin-top: 40px;">
+    <!-- TODO fix -->
+    {% for group in groups %}
+    
+      <a href="{% url 'group_view' group.id %}" class="group-card">
+        <img src="https://via.placeholder.com/60" alt="group">
+        <div class="group-info">{{group.title}}</div>
+        <small class="text-muted">{{ group.user_set.count }} members</small>
+      </a>
 
-    <!-- TODO ofc these are 4 example. fix -->
-    <div class="md-0" style="margin-top: 40px;">
-        <div class="group-card">
-            <img src="https://via.placeholder.com/60" alt="group">
-            <div class="group-info">name of your company/group</div>
-            <small class="text-muted">number of members</small>
-        </div>
-
-        <div class="group-card">
-            <img src="https://via.placeholder.com/60" alt="group">
-            <div class="group-info">name of your company/group</div>
-            <small class="text-muted">number of members</small>
-        </div>
-
-        <div class="group-card">
-            <img src="https://via.placeholder.com/60" alt="group">
-            <div class="group-info">name of your company/group</div>
-            <small class="text-muted">number of members</small>
-        </div>
-
-        <div class="group-card">
-            <img src="https://via.placeholder.com/60" alt="group">
-            <div class="group-info">name of your company/group</div>
-            <small class="text-muted">number of members</small>
-        </div>
-    </div>
-</div>
+    {% endfor %}
+  </div>
 {% endblock %}

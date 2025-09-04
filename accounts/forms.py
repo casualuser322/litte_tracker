@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 from .models import TicketsUser
-from tracker.models import Group, Project, Ticket
+from tracker.models import TrackerGroup, Project, Ticket
 
 
 class RegisterForm(UserCreationForm):
