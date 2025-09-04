@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load  static %}
+
+{% block title %}{% endblock %} <!-- TODO display current group's name -->
+
+{% block extra_styles %}
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Group Name -->
+    <h2 class="text-center mb-5">Group</h2> <!-- TODO display a{a{a group.name a}a}a-->
+
+    <!-- Projects Section -->
+    <h4 class="mb-4">Projects</h4>
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        <!-- a{a%a for project in projects a%a}a -->
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><!--a{a{a project.name a}a}a--></h5>
+                    <p class="text-muted"><!--a{a{a project.members.count a}a}a--> members</p>
+                    <div class="d-flex justify-content-around mt-3">
+                        <a href="#" class="btn btn-sm btn-outline-primary">add members</a> <!-- TODO a{a%a url 'add_members' project.id a%a}a -->
+                        <a href="#" class="btn btn-sm btn-outline-warning">edit</a> <!-- TODO a{a%a url 'edit_project' project.id a%a}a -->
+                        <a href="#" class="btn btn-sm btn-outline-danger">delete</a> <!-- TODo a{a%a url 'delete_project' project.id a%a}a-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- a{a%a empty a%a}a -->
+        <p>No projects yet.</p>
+       <!-- a{a%a endfor a%a}a -->
+    </div>
+
+    <hr class="my-5">
+
+    <!-- Members Section -->
+    <h4 class="mb-4">Members</h4>
+    <div class="table-responsive">
+        <table class="table align-middle table-striped">
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+              <!-- a{a%a for member in members a%a}a --> 
+                <tr>
+                    <td><img src="{{ member.photo.url }}" class="rounded-circle" width="40" height="40" alt="photo"></td>
+                    <td><!--a{a{a member.name a}a}a --></td>
+                    <td><!--a{a{a member.role a}a}a --></td>
+                    <td class="text-end">
+                        <a href="#" class="btn btn-sm btn-outline-primary">view profile</a> <!-- TODO a{a%a url 'view_profile' member.id a%a}a-->
+                        <a href="#" class="btn btn-sm btn-outline-danger">delete</a> <!-- TODO a{a%a url 'delete_member' member.id a%a}a -->
+                    </td>
+                </tr>
+                <!-- a{a%a empty a%a}a -->
+                <tr>
+                    <td colspan="4" class="text-center">No members yet.</td>
+                </tr>
+                <!-- a{a%a endfor a%a}a -->
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

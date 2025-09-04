@@ -1,19 +1,18 @@
 from django import forms 
-from .models import Attachment, Comment, Group, Project, Ticket
+from .models import Attachment, Comment, TrackerGroup, Project, Ticket
 
 
 class GroupForm(forms.ModelForm):
     class Meta:
-        model = Group
+        model = TrackerGroup
         fields = (
             'title',
             'description',
-            'owner',
             'members',
         )
         widgets = {
             'description': forms.Textarea(attrs={'rows': 5}),
-            'members': forms.CheckboxSelectMultiple,
+            'members': forms.CheckboxSelectMultiple(),
         }
 
 class ProjectForm(forms.ModelForm):
