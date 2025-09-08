@@ -97,3 +97,9 @@ body {
   border-color: #0d6efd;
   color: #0d6efd;
 }
+
+.rounded-circle {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

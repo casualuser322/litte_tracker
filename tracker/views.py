@@ -41,14 +41,16 @@ def create_group(request):
 def group_view(request, group_id):
     try:
         group = TrackerGroup.objects.get(id=group_id)
+        print(group.owner.username)
         projects = group.projects.all()
         members = group.members.all()
-        return render(request, "group_detail.html", {
+        members = members.union(TicketsUser.objects.filter(id=group.owner.id))
+        return render(request, "groups/groups_view.html", {
             "group": group,
             "projects": projects,
             "members": members,
         })
-    except:
+    except TrackerGroup.DoesNotExist:
         return redirect('group_list')
 
 def user_email_autocomplete(request):

@@ -29,7 +29,7 @@
   <!-- TODO add managment buttons to owned groups -->
   <!-- TODO maybe separate blocks with owned groups and regular -->
   <div class="md-0" style="margin-top: 40px;">
-    <!-- TODO fix -->
+    <!-- TODO fix that displayed only owned gropus -->
     {% for group in groups %}
     
       <a href="{% url 'group_view' group.id %}" class="group-card">

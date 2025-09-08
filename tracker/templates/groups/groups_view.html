@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load  static %}
+{% load static %}
 
 {% block title %}{% endblock %} <!-- TODO display current group's name -->
 
@@ -9,17 +9,17 @@
 {% block content %}
 <div class="container my-5">
     <!-- Group Name -->
-    <h2 class="text-center mb-5">Group</h2> <!-- TODO display a{a{a group.name a}a}a-->
+    <h2 class="text-center mb-5">{{ group.title }}</h2>
 
     <!-- Projects Section -->
     <h4 class="mb-4">Projects</h4>
     <div class="row row-cols-1 row-cols-md-4 g-4">
-        <!-- a{a%a for project in projects a%a}a -->
+        {% for project in projects %}
         <div class="col">
             <div class="card shadow-sm h-100">
                 <div class="card-body text-center">
-                    <h5 class="card-title"><!--a{a{a project.name a}a}a--></h5>
-                    <p class="text-muted"><!--a{a{a project.members.count a}a}a--> members</p>
+                    <h5 class="card-title">{{ project.name }}</h5>
+                    <p class="text-muted">{{ project.members.count }} members</p>
                     <div class="d-flex justify-content-around mt-3">
                         <a href="#" class="btn btn-sm btn-outline-primary">add members</a> <!-- TODO a{a%a url 'add_members' project.id a%a}a -->
                         <a href="#" class="btn btn-sm btn-outline-warning">edit</a> <!-- TODO a{a%a url 'edit_project' project.id a%a}a -->
@@ -28,9 +28,13 @@
                 </div>
             </div>
         </div>
-        <!-- a{a%a empty a%a}a -->
-        <p>No projects yet.</p>
-       <!-- a{a%a endfor a%a}a -->
+        {% empty %}
+        <p>
+            No projects yet. 
+            <br><br>
+            <a href="{% url 'create_project' %}" class="btn btn-sm btn-outline-primary">Create project</a>
+        </p>
+        {% endfor %}
     </div>
 
     <hr class="my-5">
@@ -43,26 +47,34 @@
                 <tr>
                     <th>Photo</th>
                     <th>Name</th>
+                    <th>Email</th>
                     <th>Role</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
             <tbody>
-              <!-- a{a%a for member in members a%a}a --> 
+                {% for member in members%} 
                 <tr>
-                    <td><img src="{{ member.photo.url }}" class="rounded-circle" width="40" height="40" alt="photo"></td>
-                    <td><!--a{a{a member.name a}a}a --></td>
-                    <td><!--a{a{a member.role a}a}a --></td>
+                    <td>
+                        <img src="{{ member.photo.url }}" class="rounded-circle" width="40" height="40"
+                            onerror onerror="
+                                this.onerror=null;
+                                this.src='tracker/img/invalid.png'
+                            ">
+                    </td>
+                    <td>{{ member.username }}</td>
+                    <td>{{ member.email }}</td> 
+                    <td>{{ member.role }}</td>
                     <td class="text-end">
-                        <a href="#" class="btn btn-sm btn-outline-primary">view profile</a> <!-- TODO a{a%a url 'view_profile' member.id a%a}a-->
-                        <a href="#" class="btn btn-sm btn-outline-danger">delete</a> <!-- TODO a{a%a url 'delete_member' member.id a%a}a -->
+                        <a href="#" class="btn btn-sm btn-outline-primary">View profile</a> <!-- TODO a{a%a url 'view_profile' member.id a%a}a-->
+                        <a href="#" class="btn btn-sm btn-outline-danger">Delete</a> <!-- TODO a{a%a url 'delete_member' member.id a%a}a -->
                     </td>
                 </tr>
-                <!-- a{a%a empty a%a}a -->
+                {% empty %}
                 <tr>
                     <td colspan="4" class="text-center">No members yet.</td>
                 </tr>
-                <!-- a{a%a endfor a%a}a -->
+                {% endfor %}
             </tbody>
         </table>
     </div>
