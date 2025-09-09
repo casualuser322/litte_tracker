@@ -25,6 +25,7 @@ def create_group(request):
             group.owner = request.user
             group.save()
             group.members.add(request.user)
+            group.members.add(*form.cleaned_data['members'])
             form.save_m2m()
             messages.success(request, 'Group is created!')
             return redirect('group_list')
@@ -65,7 +66,7 @@ def project_list(request):
     projects = request.user.projects.all()
     owned_projects = request.user.owned_projects.all()
 
-    return render(request, 'tracker/project_list.html', {
+    return render(request, 'projects/project_list.html', {
         'projects': projects,
         'owned_projects': owned_projects,
     })
@@ -78,7 +79,7 @@ def project_details(request, project_id):
     
     tickets = project.tickets.all()
 
-    return render(request, 'tickets/project_details.html', {
+    return render(request, 'projects/project_details.html', {
         'project': project,
         'tickets': tickets,
     })
@@ -90,13 +91,15 @@ def create_project(request):
         if form.is_valid():
             project = form.save(commit=False)
             project.owner = request.user
+            project.members.add(request.user)
+            project.members.add(*form.cleaned_data['members'])
             project.save()
             form.save_m2m()
             messages.success(request, 'Project is created!')
     else:
         form = ProjectForm()
     
-    return render(request, 'tickets/project_form.html', {
+    return render(request, 'projects/create_project.html', {
         'form': form,
     })
 

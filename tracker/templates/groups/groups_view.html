@@ -56,11 +56,12 @@
                 {% for member in members%} 
                 <tr>
                     <td>
-                        <img src="{{ member.photo.url }}" class="rounded-circle" width="40" height="40"
+                        <img src="{{ member.photo.url }}"
+                            class="rounded-circle" width="40" height="40"
                             onerror onerror="
                                 this.onerror=null;
                                 this.src='tracker/img/invalid.png'
-                            ">
+                        ">
                     </td>
                     <td>{{ member.username }}</td>
                     <td>{{ member.email }}</td> 
