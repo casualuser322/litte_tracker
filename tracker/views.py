@@ -72,19 +72,6 @@ def project_list(request):
     })
 
 @login_required
-def project_details(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    if request.user not in project.members.all() and request.user != project.owner:
-        return redirect('project_list')
-    
-    tickets = project.tickets.all()
-
-    return render(request, 'projects/project_details.html', {
-        'project': project,
-        'tickets': tickets,
-    })
-
-@login_required
 def create_project(request):
     if request.method == 'POST':
         form = ProjectForm(request.POST)
@@ -96,11 +83,35 @@ def create_project(request):
             project.save()
             form.save_m2m()
             messages.success(request, 'Project is created!')
+            return redirect('project_list')
     else:
         form = ProjectForm()
     
     return render(request, 'projects/create_project.html', {
         'form': form,
+    })
+
+@login_required
+def project_details(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    if request.user not in project.members.all() and request.user != project.owner:
+        return redirect('project_list')
+    
+    tickets = project.tickets.all()
+    open_tickets = tickets.filter(status='open').all()
+    in_progress_tickets = tickets.filter(status='in_progress').all()
+    testing_tickets = tickets.filter(status='testing').all()
+    done_tickets = tickets.filter(status='done').all()
+    closed_tickets = tickets.filter(status='closed').all()
+
+    return render(request, 'projects/project_details.html', {
+        'project': project,
+        'tickets': tickets,
+        # 'open_tickets': open_tickets,
+        # 'in_progress_tickets': in_progress_tickets,
+        # 'testing_tickets': testing_tickets,
+        # 'done_tickets': done_tickets,
+        # 'closed_tickets': closed_tickets,
     })
 
 @login_required

@@ -74,3 +74,4 @@ def profile_view(request):
         })
     else:
         return redirect('signin')
+
