@@ -25,6 +25,7 @@ def create_group(request):
             group.owner = request.user
             group.save()
             group.members.add(request.user)
+            group.members.add(*form.cleaned_data['members'])
             form.save_m2m()
             messages.success(request, 'Group is created!')
             return redirect('group_list')
@@ -41,14 +42,16 @@ def create_group(request):
 def group_view(request, group_id):
     try:
         group = TrackerGroup.objects.get(id=group_id)
+        print(group.owner.username)
         projects = group.projects.all()
         members = group.members.all()
-        return render(request, "group_detail.html", {
+        members = members.union(TicketsUser.objects.filter(id=group.owner.id))
+        return render(request, "groups/groups_view.html", {
             "group": group,
             "projects": projects,
             "members": members,
         })
-    except:
+    except TrackerGroup.DoesNotExist:
         return redirect('group_list')
 
 def user_email_autocomplete(request):
@@ -63,7 +66,7 @@ def project_list(request):
     projects = request.user.projects.all()
     owned_projects = request.user.owned_projects.all()
 
-    return render(request, 'tracker/project_list.html', {
+    return render(request, 'projects/project_list.html', {
         'projects': projects,
         'owned_projects': owned_projects,
     })
@@ -76,7 +79,7 @@ def project_details(request, project_id):
     
     tickets = project.tickets.all()
 
-    return render(request, 'tickets/project_details.html', {
+    return render(request, 'projects/project_details.html', {
         'project': project,
         'tickets': tickets,
     })
@@ -88,13 +91,15 @@ def create_project(request):
         if form.is_valid():
             project = form.save(commit=False)
             project.owner = request.user
+            project.members.add(request.user)
+            project.members.add(*form.cleaned_data['members'])
             project.save()
             form.save_m2m()
             messages.success(request, 'Project is created!')
     else:
         form = ProjectForm()
     
-    return render(request, 'tickets/project_form.html', {
+    return render(request, 'projects/create_project.html', {
         'form': form,
     })
 

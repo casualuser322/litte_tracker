@@ -1,5 +1,3 @@
-//const autocompleteUrl = "{% url 'user_email_autocomplete' %}";
-
 const emailInput = document.getElementById("emailInput");
 const autocompleteUrl = emailInput.dataset.autocompleteUrl;
 const suggestionsBox = document.getElementById("suggestionsBox");

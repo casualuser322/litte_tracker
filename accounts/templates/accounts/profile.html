@@ -52,9 +52,14 @@
             </div>
             
             <div class="d-grid">
-                <button type="submit" class="btn btn-primary btn-lg fw-bold">Update</button>
+                <button type="submit" class="btn btn-primary btn-lg fw-bold">Update</button><br>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-lg fw-bold">Sign out</button>
+                </form>
             </div>
         </form>
+        
     </div>
 </div>
 {% endblock %}
