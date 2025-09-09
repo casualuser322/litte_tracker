@@ -1,10 +1,50 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{project.title}}{% endblock %} <!-- TODO -->
+{% block title %}{{project.title}}{% endblock %}
 
 {% block extra_styles %}
+<link rel="stylesheet" href="{% static 'tracker/css/projects.css' %}">
 {% endblock %}
 
 {% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">{{ project.title }}</h2>
+
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light text-center">
+            <tr>
+                <th>Task ID</th>
+                <th>Task Name</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Time Left</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tickets %}
+                <tr>
+                    <td class="text-center">#{{ task.id }}</td>
+                    <td>{{ task.name }}</td>
+                    <td>{{ task.description|truncatewords:15 }}</td>
+                    <td class="text-center">
+                        <span class="badge 
+                            {% if task.status == 'unassigned' %} bg-secondary
+                            {% elif task.status == 'in_work' %} bg-warning text-dark
+                            {% elif task.status == 'review' %} bg-info text-dark
+                            {% elif task.status == 'testing' %} bg-success
+                            {% endif %}">
+                            {{ task.status|title }}
+                        </span>
+                    </td>
+                    <td class="text-center">{{ task }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No tasks available</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
