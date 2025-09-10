@@ -33,14 +33,13 @@ def signin_view(request):   # TODO process validation ui
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('project_list')
+                return redirect('group_list')
             else:
                 form.add_error(None, "Invalid email or password.")
-        else:
-            print(form.errors)
     else:
         form = SignInForm()
     
+    print(form.errors)
     return render(request, 'accounts/signin.html', {'form': form})
 
 def profile_view(request):

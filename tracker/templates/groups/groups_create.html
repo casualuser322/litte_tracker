@@ -39,7 +39,15 @@
         <small>(click to upload)</small>
       </div>
       <input type="file" id="groupLogo" class="form-control d-none" >
+    </div><br>
+
+    {% if form.errors %}
+    <div class="mb-3" style="color: red">    
+        {% for error in form.non_field_errors %}
+            <div style="color:red">{{ error }}</div>
+        {% endfor %}
     </div>
+    {% endif %} <br>
 
     <div class="text-end">
       <button type="submit" class="btn btn-primary">Create group</button>

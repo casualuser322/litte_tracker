@@ -49,17 +49,28 @@
             <div class="mb-5">
                 <label class="form-label">Upload your profile photo</label>
                 <input type="file" name="profile_image" class="form-control rounded-3">
+            </div><br>
+
+            {% if form.errors %}
+            <div class="mb-3" style="color: red">    
+                {% for error in form.non_field_errors %}
+                    <div style="color:red">{{ error }}</div>
+                {% endfor %}
             </div>
+            {% endif %} <br>
             
             <div class="d-grid">
                 <button type="submit" class="btn btn-primary btn-lg fw-bold">Update</button><br>
-                <form action="" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-lg fw-bold">Sign out</button>
-                </form>
             </div>
         </form>
-        
+
+        <div class="mb-5">
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-lg" 
+                    style="text-align: center;">Sign out</button>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}
