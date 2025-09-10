@@ -29,15 +29,25 @@
   <!-- TODO add managment buttons to owned groups -->
   <!-- TODO maybe separate blocks with owned groups and regular -->
   <div class="md-0" style="margin-top: 40px;">
-    <!-- TODO fix that displayed only owned gropus -->
     {% for group in groups %}
-    
+    <div class="group-card-wrapper position-relative">
       <a href="{% url 'group_view' group.id %}" class="group-card">
-        <img src="https://via.placeholder.com/60" alt="group">
-        <div class="group-info">{{group.title}}</div>
-        <small class="text-muted">{{ group.user_set.count }} members</small>
+          <img src="{% static 'tracker/img/group.png' %}">
+          <div class="">{{ group.title }}</div>
+          <small class="text-muted">{{ group.user_set.count }} members</small>
       </a>
 
+      {% if group.owner == request.user %}
+        <form method="post" action="{% url 'group_delete' group.id %}" class="position-absolute top-0 end-0 m-1">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger" 
+                    onclick="return confirm('Are you sure you want to delete this group?');">
+                Delete
+            </button>
+        </form>
+        {% endif %}
+    </div>
     {% endfor %}
   </div>
+</div>
 {% endblock %}

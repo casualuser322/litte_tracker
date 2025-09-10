@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.templatetags.static import static
 from django.shortcuts import render, redirect, get_object_or_404
 
 from accounts.models import TicketsUser
@@ -26,12 +27,30 @@ def create_group(request):
             group.owner = request.user
             group.save()
             if 'emails' in request.POST and request.POST['emails']:
-                for target_usr in request.POST['emails'].split(','):
-                    invitation = InvitationForm()
-                    invitation.owner = request.user
-                    invitation.target_user = TicketsUser.objects.get(email=target_usr)
-                    invitation.type = 'group'
-                    invitation.save()
+                for target_usr in request.POST.get('emails', '').split(','):
+                    try:
+                        target_user = TicketsUser.objects.get(
+                            email=target_usr.strip()
+                        )
+                    except TicketsUser.DoesNotExist:
+                        messages.warning(
+                            request,
+                            f"User with email {target_usr} not found."
+                        )
+                        continue
+
+                    invitation = InvitationForm(data={
+                        'target_user': target_user.id,
+                        'invitation_type': 'group'
+                    })
+
+                    if invitation.is_valid():
+                        inv = invitation.save(commit=False)
+                        inv.owner = request.user
+                        inv.save()
+                    else:
+                        print(invitation.errors)
+
 
             group.members.add(request.user)
             form.save_m2m()
@@ -50,7 +69,6 @@ def create_group(request):
 def group_view(request, group_id):
     try:
         group = TrackerGroup.objects.get(id=group_id)
-        print(group.owner.username)
         projects = group.projects.all()
         members = group.members.all()
         members = members.union(TicketsUser.objects.filter(id=group.owner.id))
@@ -58,6 +76,7 @@ def group_view(request, group_id):
             "group": group,
             "projects": projects,
             "members": members,
+            "analogy": static('tracker/img/invalid.png'),
         })
     except TrackerGroup.DoesNotExist:
         return redirect('group_list')
@@ -68,6 +87,23 @@ def user_email_autocomplete(request):
     results = [{"id": u.id, "email": u.email} for u in users]
 
     return JsonResponse(results, safe=False)
+
+@login_required
+def group_delete(request, pk):
+    group = get_object_or_404(TrackerGroup, pk=pk)
+
+    if group.owner != request.user:
+        messages.error(
+            request,
+            "You do not have permission to delete this group."
+        )
+        return redirect('group_list') 
+    if request.method == "POST":
+        group.delete()
+        messages.success(request, "Group deleted successfully!")
+        return redirect('group_list')
+
+    return redirect('group_list')
 
 @login_required
 def project_list(request):

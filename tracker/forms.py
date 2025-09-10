@@ -59,10 +59,10 @@ class AttachmentForm(forms.ModelForm):
         model = Attachment
         fields = ('attached_file',)
 
-class InvitationForm(forms.Form):
+class InvitationForm(forms.ModelForm):
     class Meta:
         model = Invitation
         fields = (
-            'email',
-            'type',
+            'target_user',
+            'invitation_type',
         )
