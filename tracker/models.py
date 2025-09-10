@@ -17,6 +17,11 @@ class TrackerGroup(models.Model):
         related_name="attached_groups",
         blank=True
     )
+    group_logo = models.ImageField(
+        upload_to='group_avatars/',
+        blank=True,
+        null=True,
+    )
 
     def __str__(self):
         return self.title
