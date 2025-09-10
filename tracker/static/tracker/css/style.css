@@ -159,7 +159,6 @@ body {
     z-index: 1;
 }
 
-
 @media (max-width: 768px) {
     .header-container {
         padding: 0 1rem;

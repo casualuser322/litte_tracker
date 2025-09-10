@@ -53,6 +53,15 @@
                     placeholder="Confirm your password.." required>
             </div>
             <br>
+            
+            {% if form.errors %}
+            <div class="mb-3" style="color: red">    
+                {% for error in form.non_field_errors %}
+                    <div style="color:red">{{ error }}</div>
+                {% endfor %}
+            </div>
+            {% endif %} <br>
+
             <div class="d-grid">
                 <button type="submit" class="btn btn-primary btn-lg fw-bold rounded-3">Sign in</button>
             </div>

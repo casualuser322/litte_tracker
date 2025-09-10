@@ -32,6 +32,14 @@
         <input type="hidden" name="emails" id="emailsHidden">
 
         <script src="{% static 'tracker/js/email_check.js' %}"></script>
+        <br>
+        {% if form.errors %}
+        <div class="mb-3" style="color: red">    
+            {% for error in form.non_field_errors %}
+                <div style="color:red">{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %} <br>
 
         <div class="text-end">
             <button type="submit" class="btn btn-primary">Create project</button>
