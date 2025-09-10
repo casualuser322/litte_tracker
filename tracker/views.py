@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from accounts.models import TicketsUser
-from .models import Attachment, Comment, TrackerGroup, Project, Ticket
+from .models import \
+    Attachment, Comment, Invitation, TrackerGroup, Project, Ticket
 from .forms import \
-    AttachmentForm, CommentForm, GroupForm, ProjectForm, TicketForm
+    AttachmentForm, CommentForm, InvitationForm, GroupForm, ProjectForm, TicketForm
 
 
 @login_required
@@ -24,8 +25,15 @@ def create_group(request):
             group = form.save(commit=False)
             group.owner = request.user
             group.save()
+            if 'emails' in request.POST and request.POST['emails']:
+                for target_usr in request.POST['emails'].split(','):
+                    invitation = InvitationForm()
+                    invitation.owner = request.user
+                    invitation.target_user = TicketsUser.objects.get(email=target_usr)
+                    invitation.type = 'group'
+                    invitation.save()
+
             group.members.add(request.user)
-            group.members.add(*form.cleaned_data['members'])
             form.save_m2m()
             messages.success(request, 'Group is created!')
             return redirect('group_list')

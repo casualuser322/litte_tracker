@@ -1,5 +1,5 @@
 from django import forms 
-from .models import Attachment, Comment, TrackerGroup, Project, Ticket
+from .models import Attachment, Comment, Invitation, TrackerGroup, Project, Ticket
 
 
 class GroupForm(forms.ModelForm):
@@ -58,3 +58,11 @@ class AttachmentForm(forms.ModelForm):
     class Meta:
         model = Attachment
         fields = ('attached_file',)
+
+class InvitationForm(forms.Form):
+    class Meta:
+        model = Invitation
+        fields = (
+            'email',
+            'type',
+        )

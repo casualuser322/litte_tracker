@@ -140,3 +140,37 @@ class Attachment(models.Model):
     
     def __str__(self):
         return f"Attachment to {self.ticket.title}"
+
+class Invitation(models.Model):
+    INVITATION_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('declined', 'Declined'),
+    ]
+    INVITATION_TYPES_CHOICES = [
+        ('group', 'Group'),
+        ('project', 'Project'), 
+    ]
+
+    owner = models.ForeignKey(
+        'accounts.TicketsUser',
+        on_delete=models.CASCADE,
+        related_name="invitation_owner",
+    )
+    target_user = models.ForeignKey(
+        'accounts.TicketsUser',
+        on_delete=models.CASCADE,
+        related_name="target_user",
+    )
+    invitation_type = models.CharField(
+        max_length=20,
+        choices=INVITATION_TYPES_CHOICES,
+    )
+    invitation_status = models.CharField(
+        max_length=20,
+        choices=INVITATION_STATUS_CHOICES,
+        default="pending"
+    )
+    created_at = models.DateTimeField(default=timezone.now)
+
+    
