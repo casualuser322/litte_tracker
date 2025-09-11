@@ -167,6 +167,11 @@ class Invitation(models.Model):
         on_delete=models.CASCADE,
         related_name="target_user",
     )
+    target_group = models.ForeignKey(
+        TrackerGroup,
+        on_delete=models.CASCADE,
+        related_name="invites"
+    )
     invitation_type = models.CharField(
         max_length=20,
         choices=INVITATION_TYPES_CHOICES,

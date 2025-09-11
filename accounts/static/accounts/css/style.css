@@ -44,3 +44,15 @@ body {
 .form-control::placeholder {
     color: rgba(0, 0, 0, 0.4) !important;
 }
+
+.sidebar {
+    flex: 1;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    height: fit-content;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.main-form {
+    flex: 3;
+}

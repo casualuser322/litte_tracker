@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login
 
 from .models import TicketsUser
 from .forms import RegisterForm, SignInForm, UserUpdateForm
+from tracker.models import Invitation, TrackerGroup
 
 
 def register_view(request):
@@ -18,6 +19,7 @@ def register_view(request):
             user.save()
             return redirect('signin')
         else:
+            form.add_error(None, "Passwords do not match")
             print(form.errors)
     else:
         form = RegisterForm()
@@ -63,6 +65,13 @@ def profile_view(request):
         else:
             form = UserUpdateForm(instance=user)
 
+        all_invitations = Invitation.objects.filter(
+            target_user=user
+        ).select_related("target_group")
+        all_groups = {inv.owner: inv.target_group.title for inv in all_invitations}
+
+        print(all_groups)
+
         return render(request, "accounts/profile.html", {
             "form": form,
             "user": user,
@@ -70,6 +79,8 @@ def profile_view(request):
             "username": user.username,
             "first_name": user.first_name,
             "last_name": user.last_name,
+            "invitations": all_invitations,
+            "invited_to": all_groups,
         })
     else:
         return redirect('signin')

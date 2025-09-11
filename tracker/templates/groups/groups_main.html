@@ -32,7 +32,7 @@
     {% for group in groups %}
     <div class="group-card-wrapper position-relative">
       <a href="{% url 'group_view' group.id %}" class="group-card">
-          <img src="{% static 'tracker/img/group.png' %}">
+          <img src="{% static 'tracker/img/group.png' %}" class="member-photo">
           <div class="">{{ group.title }}</div>
           <small class="text-muted">{{ group.user_set.count }} members</small>
       </a>

@@ -9,6 +9,28 @@
 
 {% block content%}
 <div class="container">
+    {% if invitations %}<br>
+    <div class="sidebar">
+        <h5>Invitations</h5>
+        <ul class="list-unstyled">
+            {% for invitation in invitations %}
+                <li class="mb-2 p-2 bg-white rounded shadow-sm">
+                     <i>{{ invitation.owner }}</i> invited you to <b>{{ invitation.target_group.title }}</b>
+                    <div class="mt-1">
+                        <form method="post" action="" style="display:inline"> <!-- a{a%a url 'accept_invitation' invitation.id a%a}a -->
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-success">Accept</button>
+                        </form>
+                        <form method="post" action="" style="display:inline"> <!-- a{a%a url 'decline_invitation' invitation.id a%a}a-->
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-danger">Decline</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
     <div class="form-box mx-auto mt-6 p-5 rounded-4 shadow-sm bg-white" style="max-width: 520px;">
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -73,4 +95,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
