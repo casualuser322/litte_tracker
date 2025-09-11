@@ -8,7 +8,7 @@ from accounts.models import TicketsUser
 from .models import \
     Attachment, Comment, Invitation, TrackerGroup, Project, Ticket
 from .forms import \
-    AttachmentForm, CommentForm, InvitationForm, GroupForm, ProjectForm, TicketForm
+    AttachmentForm, CommentForm, GroupForm, ProjectForm, TicketForm
 
 
 @login_required
@@ -26,31 +26,24 @@ def create_group(request):
             group = form.save(commit=False)
             group.owner = request.user
             group.save()
-            if 'emails' in request.POST and request.POST['emails']:
-                for target_usr in request.POST.get('emails', '').split(','):
+
+            emails = request.POST.get('emails', '')
+
+            if emails:
+                for email in emails.split(','):
+                    email = email.strip()
                     try:
-                        target_user = TicketsUser.objects.get(
-                            email=target_usr.strip()
-                        )
+                        target_user = TicketsUser.objects.get(email=email)
                     except TicketsUser.DoesNotExist:
-                        messages.warning(
-                            request,
-                            f"User with email {target_usr} not found."
-                        )
+                        messages.warning(request, f"User with email {email} not found.")
                         continue
 
-                    invitation = InvitationForm(data={
-                        'target_user': target_user.id,
-                        'invitation_type': 'group'
-                    })
-
-                    if invitation.is_valid():
-                        inv = invitation.save(commit=False)
-                        inv.owner = request.user
-                        inv.save()
-                    else:
-                        print(invitation.errors)
-
+                    Invitation.objects.create(
+                        owner=request.user,
+                        target_user=target_user,
+                        target_group=group,
+                        invitation_type='group'
+                    )
 
             group.members.add(request.user)
             form.save_m2m()
