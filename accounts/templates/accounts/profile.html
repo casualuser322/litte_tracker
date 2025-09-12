@@ -17,11 +17,11 @@
                 <li class="mb-2 p-2 bg-white rounded shadow-sm">
                      <i>{{ invitation.owner }}</i> invited you to <b>{{ invitation.target_group.title }}</b>
                     <div class="mt-1">
-                        <form method="post" action="" style="display:inline"> <!-- a{a%a url 'accept_invitation' invitation.id a%a}a -->
+                        <form method="post" action="{% url 'accept_invitation' invitation.id %}" style="display:inline">
                             {% csrf_token %}
                             <button class="btn btn-sm btn-success">Accept</button>
                         </form>
-                        <form method="post" action="" style="display:inline"> <!-- a{a%a url 'decline_invitation' invitation.id a%a}a-->
+                        <form method="post" action="{% url 'decline_invitation' invitation.id %}" style="display:inline">
                             {% csrf_token %}
                             <button class="btn btn-sm btn-danger">Decline</button>
                         </form>

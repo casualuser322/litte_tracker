@@ -13,7 +13,9 @@ from .forms import \
 
 @login_required
 def group_list(request):
-    groups = request.user.owned_groups.all() # TODO add member groups
+    user = request.user
+    owned_groups = user.owned_groups.all()
+    groups = TrackerGroup.objects.all()
     return render(request, 'groups/groups_main.html', {
         'groups': groups,
     })

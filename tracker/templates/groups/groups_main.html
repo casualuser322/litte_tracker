@@ -9,27 +9,29 @@
 
 {% block content %}
 <div class="container my-4">
-    <div class="row align-items-center mb-3">
-  <div class="col-3">
-    <a href="{% url 'create_group' %}" class="btn create-btn">
-      <span class="plus">+</span>
-      <span class="label">Create group</span>
-    </a>
-  </div>
+  <div class="row align-items-center mb-3">
+    <div class="col-3">
+      <a href="{% url 'create_group' %}" class="btn create-btn">
+        <span class="plus">+</span>
+        <span class="label">Create group</span>
+      </a>
+    </div>
 
-  <div class="col-6 text-center">
-    <h3 class="mb-0">Groups</h3>
-  </div>
+    <div class="col-6 text-center">
+      <h3 class="mb-0">Groups</h3>
+    </div>
 
-  <div class="col-3 text-end">
-    <input type="text" class="search-bar" placeholder="search">
+    <div class="col-3 text-end">
+      <input type="text" class="search-bar" placeholder="search">
+    </div>
   </div>
-</div>
 
   <!-- TODO add managment buttons to owned groups -->
   <!-- TODO maybe separate blocks with owned groups and regular -->
   <div class="md-0" style="margin-top: 40px;">
-    {% for group in groups %}
+    {% if owned_groups %}
+    <h3>Owned groups</h3><br>
+    {% for group in owned_groups %}
     <div class="group-card-wrapper position-relative">
       <a href="{% url 'group_view' group.id %}" class="group-card">
           <img src="{% static 'tracker/img/group.png' %}" class="member-photo">
@@ -48,6 +50,21 @@
         {% endif %}
     </div>
     {% endfor %}
+    {% endif %}
+    {% if groups %}
+    <h3>Groups</h3><br>
+    {% for group in groups %}
+    <div class="group-card-wrapper position-relative">
+      <a href="{% url 'group_view' group.id %}" class="group-card">
+          <img src="{% static 'tracker/img/group.png' %}" class="member-photo">
+          <div class="">{{ group.title }}</div>
+          <small class="text-muted">{{ group.user_set.count }} members</small>
+      </a>
+    </div>
+    {% empty %}
+    <h4>You don't have any groups yet</h4>
+    {% endfor %}
+    {% endif %}
   </div>
 </div>
 {% endblock %}

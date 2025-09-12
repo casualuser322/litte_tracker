@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{% endblock %} <!-- TODO display current group's name -->
+{% block title %}{{group.title}}{% endblock %} <!-- TODO display current group's name -->
 
 {% block extra_styles %}
 <link rel="stylesheet" href="{% static 'tracker/css/groups.css' %}">
