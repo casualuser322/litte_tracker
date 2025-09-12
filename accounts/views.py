@@ -1,7 +1,8 @@
 from django import forms
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 
 from .models import TicketsUser
 from .forms import RegisterForm, SignInForm, UserUpdateForm
@@ -66,7 +67,9 @@ def profile_view(request):
             form = UserUpdateForm(instance=user)
 
         all_invitations = Invitation.objects.filter(
-            target_user=user
+            target_user=user,
+            invitation_type='group',
+            invitation_status='pending'
         ).select_related("target_group")
         all_groups = {inv.owner: inv.target_group.title for inv in all_invitations}
 
@@ -85,3 +88,32 @@ def profile_view(request):
     else:
         return redirect('signin')
 
+@login_required
+def accept_invitation(request, inv_id):
+    user = request.user
+    if request.method == 'POST':
+        invitation = get_object_or_404(
+            Invitation, 
+            id=inv_id, 
+            target_user=request.user
+        )
+        group = TrackerGroup.objects.get(id=invitation.id)
+        
+        invitation.status = 'accepted'
+        group.members.add(user)
+
+    return redirect(request.META.get("HTTP_REFERER", "profile"))
+
+def decline_invitation(request, inv_id):
+    user = request.user
+
+    if request.method == 'POST':
+        invitation = get_object_or_404(
+            Invitation, 
+            id=inv_id, 
+            target_user=request.user
+        )
+        invitation.status = 'declined'
+        invitation.save()
+    
+    return redirect(request.META.get("HTTP_REFERER", "profile"))
