@@ -51,9 +51,9 @@
     </div>
     {% endfor %}
     {% endif %}
-    {% if groups %}
+    {% if member_groups %}
     <h3>Groups</h3><br>
-    {% for group in groups %}
+    {% for group in member_groups %}
     <div class="group-card-wrapper position-relative">
       <a href="{% url 'group_view' group.id %}" class="group-card">
           <img src="{% static 'tracker/img/group.png' %}" class="member-photo">

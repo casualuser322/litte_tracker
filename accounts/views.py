@@ -95,12 +95,14 @@ def accept_invitation(request, inv_id):
         invitation = get_object_or_404(
             Invitation, 
             id=inv_id, 
-            target_user=request.user
+            target_user=user
         )
-        group = TrackerGroup.objects.get(id=invitation.id)
-        
-        invitation.status = 'accepted'
-        group.members.add(user)
+        group = invitation.target_group
+        if user not in group.members.all():
+            group.members.add(user)
+
+        invitation.invitation_status = 'accepted'
+        invitation.save()
 
     return redirect(request.META.get("HTTP_REFERER", "profile"))
 

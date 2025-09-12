@@ -14,10 +14,15 @@ from .forms import \
 @login_required
 def group_list(request):
     user = request.user
-    owned_groups = user.owned_groups.all()
-    groups = TrackerGroup.objects.all()
+
+    owned_groups = user.owned_groups.all()          
+    member_groups = user.attached_groups.all()
+    for mem in member_groups:
+        print(mem)
+
     return render(request, 'groups/groups_main.html', {
-        'groups': groups,
+        'owned_groups': owned_groups,
+        'member_groups': member_groups,
     })
 
 @login_required
@@ -44,7 +49,7 @@ def create_group(request):
                         owner=request.user,
                         target_user=target_user,
                         target_group=group,
-                        invitation_type='group'
+                        invitation_type='group',
                     )
 
             group.members.add(request.user)
@@ -81,7 +86,28 @@ def user_email_autocomplete(request):
     users = TicketsUser.objects.filter(email__icontains=query)[:10]
     results = [{"id": u.id, "email": u.email} for u in users]
 
-    return JsonResponse(results, safe=False)
+    return JsonResponse(results, safe=False)\
+
+def send_invitation(request, group_id):
+    emails = request.POST.get("emails", "").strip()
+    group = get_object_or_404(TrackerGroup, id=group_id)
+
+    if emails:
+        # if multiple emails are comma-separated:
+        for email in [e.strip() for e in emails.split(",") if e.strip()]:
+            try:
+                user = TicketsUser.objects.get(email=email)
+                Invitation.objects.create(
+                    owner=request.user,
+                    target_user=user,
+                    target_group=group,
+                    invitation_type="group",
+                )
+            except TicketsUser.DoesNotExist:
+                # optional: handle inviting non-registered users
+                pass
+
+    return redirect(request.META.get("HTTP_REFERER", "group_view"))
 
 @login_required
 def group_delete(request, pk):

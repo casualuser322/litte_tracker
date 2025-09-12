@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{group.title}}{% endblock %} <!-- TODO display current group's name -->
+{% block title %}{{ group.title }}{% endblock %} <!-- TODO display current group's name -->
 
 {% block extra_styles %}
 <link rel="stylesheet" href="{% static 'tracker/css/groups.css' %}">
@@ -37,8 +37,30 @@
     </div>
 
     <hr class="my-5">
-
     <h4 class="mb-4">Members</h4>
+    <div class="d-flex align-items-center mb-3" id="invite-wrapper">
+        <form action="{% url 'send_invitation' group.id %}" method="POST">
+            {% csrf_token %}
+            <input type="text" 
+                id="emailInput" 
+                class="form-control me-2" 
+                placeholder="Enter email..." 
+                style="max-width:0; opacity:0; transition:all 0.3s ease;"
+                placeholder="Add your co-workers' email.."
+                data-autocomplete-url="{% url 'user_email_autocomplete' %}"
+            />
+            <ul class="list-group position-absolute w-100" 
+                id="suggestionsBox" style="z-index:1000; display:none;"></ul>
+            <div id="selectedEmails" class="d-flex flex-wrap gap-2"></div>
+            <input type="hidden" name="emails" id="emailsHidden">
+            <button type="button" class="btn btn-sm btn-outline-primary" id="invite-btn">
+                Invite new member
+            </button>
+            <script src="{% static 'tracker/js/email_check.js' %}"></script>
+            <script src="{% static 'tracker/js/invite_member.js' %}"></script>
+        </form>
+    </div>
+    <hr class="my-5">
     <div class="table-responsive">
         <table class="table align-middle table-striped">
             <thead>
