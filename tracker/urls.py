@@ -7,6 +7,11 @@ urlpatterns = [
     path("groups/create", view=views.create_group, name="create_group"),
     path("groups/<int:group_id>/", views.group_view, name="group_view"),
     path("groups/<int:pk>/delete/", views.group_delete, name="group_delete"),
+    path(
+        "groups/delete_member/<int:group_id>/<int:pk>",
+        view=views.delete_group_member, 
+        name="delete_member"
+    ),
     path("invitation/send/<int:group_id>", views.send_invitation, name='send_invitation'),
     #path("members/<int:pk>/profile/", views.view_profile, name="view_profile"),
     #path("members/<int:pk>/delete/", views.delete_member, name="delete_member"),

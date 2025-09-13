@@ -72,6 +72,7 @@ def group_view(request, group_id):
         projects = group.projects.all()
         members = group.members.all()
         members = members.union(TicketsUser.objects.filter(id=group.owner.id))
+
         return render(request, "groups/groups_view.html", {
             "group": group,
             "projects": projects,
@@ -80,6 +81,15 @@ def group_view(request, group_id):
         })
     except TrackerGroup.DoesNotExist:
         return redirect('group_list')
+
+def delete_group_member(request, group_id, pk):
+    admini = request.user
+    group = get_object_or_404(TrackerGroup, id=group_id)
+
+    if admini.id == group.owner.id:
+        group.members.remove(pk)
+
+    return redirect(request.META.get("HTTP_REFERER", "group_view"))
 
 def user_email_autocomplete(request):
     query = request.GET.get("q", "")
@@ -93,7 +103,6 @@ def send_invitation(request, group_id):
     group = get_object_or_404(TrackerGroup, id=group_id)
 
     if emails:
-        # if multiple emails are comma-separated:
         for email in [e.strip() for e in emails.split(",") if e.strip()]:
             try:
                 user = TicketsUser.objects.get(email=email)
@@ -104,7 +113,6 @@ def send_invitation(request, group_id):
                     invitation_type="group",
                 )
             except TicketsUser.DoesNotExist:
-                # optional: handle inviting non-registered users
                 pass
 
     return redirect(request.META.get("HTTP_REFERER", "group_view"))

@@ -87,7 +87,9 @@
                     <td>{{ member.role }}</td>
                     <td class="text-end">
                         <a href="#" class="btn btn-sm btn-outline-primary">View profile</a> <!-- TODO a{a%a url 'view_profile' member.id a%a}a-->
-                        <a href="#" class="btn btn-sm btn-outline-danger">Delete</a> <!-- TODO a{a%a url 'delete_member' member.id a%a}a -->
+                        {% if user.id == group.owner.id %}
+                        <a href="{% url 'delete_member' group.id member.id %}" class="btn btn-sm btn-outline-danger">Delete</a> <!-- TODO  -->
+                        {% endif %}
                     </td>
                 </tr>
                 {% empty %}
