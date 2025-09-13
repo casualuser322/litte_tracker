@@ -14,7 +14,7 @@
     <h4 class="mb-4">Projects</h4>
     <div class="row row-cols-1 row-cols-md-4 g-4">
         {% for project in projects %}
-        <div class="col">
+        <a href="{% url 'project_details' project.id %}">
             <div class="card shadow-sm h-100">
                 <div class="card-body text-center">
                     <h5 class="card-title">{{ project.name }}</h5>
@@ -26,12 +26,12 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
         {% empty %}
         <p>
             No projects yet. 
             <br><br>
-            <a href="{% url 'create_project' %}" class="btn btn-sm btn-outline-primary">Create project</a>
+            <a href="{% url 'create_project' group.id %}" class="btn btn-sm btn-outline-primary">Create project</a>
         </p>
         {% endfor %}
     </div>

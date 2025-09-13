@@ -19,15 +19,9 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = (
-            'title',
-            'description',
-            'owner',
-            'members',
+            "title", 
+            "description"
         )
-        widgets = {
-            'description': forms.Textarea(attrs={'rows': 5}),
-            'members': forms.CheckboxSelectMultiple
-        }
 
 class TicketForm(forms.ModelForm):
     class Meta:

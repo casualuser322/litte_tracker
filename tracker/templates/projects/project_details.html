@@ -8,9 +8,11 @@
 {% endblock %}
 
 {% block content %}
+<br>
 <div class="container mt-4">
-    <h2 class="text-center mb-4">{{ project.title }}</h2>
-
+    <h2 class="text-center mb-4">{{ project.title }}</h2><br>
+    <a href="{% url 'create_ticket' project.id %}" class="btn btn-sm btn-outline-primary">Create task</a>
+    
     <table class="table table-bordered table-hover align-middle">
         <thead class="table-light text-center">
             <tr>

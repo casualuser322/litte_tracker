@@ -137,7 +137,7 @@ def send_invitation(request, group_id):
 
 @login_required
 def group_delete(request, pk):
-    group = get_object_or_404(TrackerGroup, pk=pk)
+    group = get_object_or_404(TrackerGroup, id=pk)
 
     if group.owner != request.user:
         messages.error(
@@ -163,24 +163,34 @@ def project_list(request):
     })
 
 @login_required
-def create_project(request):
+def create_project(request, group_id):
+    user = request.user
     if request.method == 'POST':
         form = ProjectForm(request.POST)
+        emails = request.POST.get("emails", "").split(",")  # emails from hidden input
+
         if form.is_valid():
             project = form.save(commit=False)
-            project.owner = request.user
-            project.members.add(request.user)
-            project.members.add(*form.cleaned_data['members'])
+            project.owner = user
+            project.attached_group = get_object_or_404(TrackerGroup, id=group_id)
             project.save()
-            form.save_m2m()
+            project.members.add(user)  # owner always included
+
+            # Add coworkers if they exist
+            for email in emails:
+                email = email.strip()
+                if not email:
+                    continue
+                coworker = TicketsUser.objects.filter(email=email).first()
+                if coworker:
+                    project.members.add(coworker)
+
             messages.success(request, 'Project is created!')
             return redirect('project_list')
     else:
         form = ProjectForm()
     
-    return render(request, 'projects/create_project.html', {
-        'form': form,
-    })
+    return render(request, 'projects/create_project.html', {'form': form})
 
 @login_required
 def project_details(request, project_id):
