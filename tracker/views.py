@@ -91,6 +91,24 @@ def delete_group_member(request, group_id, pk):
 
     return redirect(request.META.get("HTTP_REFERER", "group_view"))
 
+def leave_group_member(request, group_id):
+    user = request.user
+    group = get_object_or_404(TrackerGroup, id=group_id)
+
+    # Prevent owner from leaving their own group
+    if group.owner == user:
+        messages.error(request, "Group owners cannot leave their own group.")
+        return redirect(request.META.get("HTTP_REFERER", "group_list"))
+
+    if group.members.filter(id=user.id).exists():
+        group.members.remove(user)
+        messages.success(request, f"You left the group {group.title}.")
+    else:
+        messages.warning(request, "You are not a member of this group.")
+
+    return redirect(request.META.get("HTTP_REFERER", "group_list"))
+
+
 def user_email_autocomplete(request):
     query = request.GET.get("q", "")
     users = TicketsUser.objects.filter(email__icontains=query)[:10]

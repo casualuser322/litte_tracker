@@ -12,6 +12,11 @@ urlpatterns = [
         view=views.delete_group_member, 
         name="delete_member"
     ),
+    path(
+        "groups/leave_member/<int:group_id>",
+        view=views.leave_group_member,
+        name="leave_member"
+    ),
     path("invitation/send/<int:group_id>", views.send_invitation, name='send_invitation'),
     #path("members/<int:pk>/profile/", views.view_profile, name="view_profile"),
     #path("members/<int:pk>/delete/", views.delete_member, name="delete_member"),
