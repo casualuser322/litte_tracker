@@ -1,52 +1,43 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{project.title}}{% endblock %}
+{% block title %}{{ project.title }}{% endblock %}
 
 {% block extra_styles %}
 <link rel="stylesheet" href="{% static 'tracker/css/projects.css' %}">
+<link rel="stylesheet" href="{% static 'tracker/css/tickets.css' %}">
 {% endblock %}
 
 {% block content %}
-<br>
 <div class="container mt-4">
-    <h2 class="text-center mb-4">{{ project.title }}</h2><br>
-    <a href="{% url 'create_ticket' project.id %}" class="btn btn-sm btn-outline-primary">Create task</a>
-    
-    <table class="table table-bordered table-hover align-middle">
-        <thead class="table-light text-center">
-            <tr>
-                <th>Task ID</th>
-                <th>Task Name</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Time Left</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for task in tickets %}
-                <tr>
-                    <td class="text-center">#{{ task.id }}</td>
-                    <td>{{ task.name }}</td>
-                    <td>{{ task.description|truncatewords:15 }}</td>
-                    <td class="text-center">
-                        <span class="badge 
-                            {% if task.status == 'unassigned' %} bg-secondary
-                            {% elif task.status == 'in_work' %} bg-warning text-dark
-                            {% elif task.status == 'review' %} bg-info text-dark
-                            {% elif task.status == 'testing' %} bg-success
-                            {% endif %}">
-                            {{ task.status|title }}
-                        </span>
-                    </td>
-                    <td class="text-center">{{ task }}</td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center text-muted">No tasks available</td>
-                </tr>
+    <h2 class="text-center mb-4">{{ project.title }}</h2>
+
+    <div class="mb-3 text-center">
+        <a href="{% url 'create_ticket' project.id %}" class="btn btn-sm btn-outline-primary">Create Task</a>
+    </div>
+    <div id="kanban-board" data-update-url="{% url 'update_task_status' %}">
+        <div class="kanban-board">
+            {% for status in statuses %}
+            <div class="kanban-column" data-status="{{ status.key }}">
+                <h5>{{ status.label }}</h5>
+                {% for task in tickets %}
+                    {% if task.status == status.key %}
+                    <a href="{% url 'ticket_detail' task.id %}" class="kanban-card" draggable="true" data-task-id="{{ task.id }}">
+                        <div class="fw-bold">{{ task.name }}</div>
+                        <div class="text-truncate">{{ task.description|truncatewords:15 }}</div>
+                        <div class="mt-2 d-flex justify-content-between align-items-center">
+                            <span class="badge {{ status.badge_class }}">{{ task.status|title }}</span>
+                            <small class="text-muted">{{ task }}</small>
+                        </div>
+                    </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
             {% endfor %}
-        </tbody>
-    </table>
+        </div>
+    </div>
 </div>
+
+<script src="{% static 'tracker/js/kanban_card.js' %}"></script>
 {% endblock %}
+

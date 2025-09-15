@@ -29,6 +29,11 @@ urlpatterns = [
         name="update_ticket"
     ),
     path(
+        "tickets/update-status/",
+        view=views.update_task_status,
+        name="update_task_status"
+    ),
+    path(
         "api/autocomplete/emails/", 
         view=views.user_email_autocomplete, 
         name="user_email_autocomplete"
