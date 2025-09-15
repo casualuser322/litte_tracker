@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ group.title }}{% endblock %} <!-- TODO display current group's name -->
+{% block title %}{{ group.title }}{% endblock %}
 
 {% block extra_styles %}
 <link rel="stylesheet" href="{% static 'tracker/css/groups.css' %}">
@@ -14,55 +14,55 @@
     <h4 class="mb-4">Projects</h4>
     <div class="row row-cols-1 row-cols-md-4 g-4">
         {% for project in projects %}
-        <a href="{% url 'project_details' project.id %}">
-            <div class="card shadow-sm h-100">
+        <div class="col">
+            <div class="card shadow-sm h-100 position-relative">
+                <a href="{% url 'project_details' project.id %}" class="stretched-link"></a>
+
                 <div class="card-body text-center">
                     <h5 class="card-title">{{ project.name }}</h5>
                     <p class="text-muted">{{ project.members.count }} members</p>
                     <div class="d-flex justify-content-around mt-3">
-                        <a href="#" class="btn btn-sm btn-outline-primary">add members</a> <!-- TODO a{a%a url 'add_members' project.id a%a}a -->
-                        <a href="#" class="btn btn-sm btn-outline-warning">edit</a> <!-- TODO a{a%a url 'edit_project' project.id a%a}a -->
-                        <a href="#" class="btn btn-sm btn-outline-danger">delete</a> <!-- TODo a{a%a url 'delete_project' project.id a%a}a-->
+                        <a href="#" class="btn btn-sm btn-outline-primary">Add members</a> <!-- TODO a{a%a url 'add_members' project.id a%a}a -->
+                        <a href="#" class="btn btn-sm btn-outline-warning">Edit</a> <!-- TODO a{a%a url 'edit_project' project.id a%a}a -->
+                        <a href="#" class="btn btn-sm btn-outline-danger">Delete</a> <!-- TODO a{a%a url 'delete_project' project.id a%a}a -->
                     </div>
                 </div>
             </div>
-        </a>
+        </div>
         {% empty %}
-        <p>
-            No projects yet. 
-        </p>
+        <p>No projects yet.</p>
         {% endfor %}
     </div>
-    <br><br>
-    <p>
+
+    <p class="mt-4">
         <a href="{% url 'create_project' group.id %}" class="btn btn-sm btn-outline-primary">Create project</a>
     </p>
 
     <hr class="my-5">
+
     <h4 class="mb-4">Members</h4>
     <div class="d-flex align-items-center mb-3" id="invite-wrapper">
-        <form action="{% url 'send_invitation' group.id %}" method="POST">
+        <form action="{% url 'send_invitation' group.id %}" method="POST" class="w-100 position-relative">
             {% csrf_token %}
-            <input type="text" 
-                id="emailInput" 
-                class="form-control me-2" 
-                placeholder="Enter email..." 
+            <input type="text"
+                id="emailInput"
+                class="form-control me-2"
                 style="max-width:0; opacity:0; transition:all 0.3s ease;"
-                placeholder="Add your co-workers' email.."
-                data-autocomplete-url="{% url 'user_email_autocomplete' %}"
-            />
-            <ul class="list-group position-absolute w-100" 
-                id="suggestionsBox" style="z-index:1000; display:none;"></ul>
+                placeholder="Add your co-workers' email..."
+                data-autocomplete-url="{% url 'user_email_autocomplete' %}">
+            
+            <ul class="list-group position-absolute w-100" id="suggestionsBox" style="z-index:1000; display:none;"></ul>
             <div id="selectedEmails" class="d-flex flex-wrap gap-2"></div>
             <input type="hidden" name="emails" id="emailsHidden">
-            <button type="button" class="btn btn-sm btn-outline-primary" id="invite-btn">
-                Invite new member
-            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="invite-btn">Invite new member</button>
+
             <script src="{% static 'tracker/js/email_check.js' %}"></script>
             <script src="{% static 'tracker/js/invite_member.js' %}"></script>
         </form>
     </div>
+
     <hr class="my-5">
+
     <div class="table-responsive">
         <table class="table align-middle table-striped">
             <thead>
@@ -75,31 +75,28 @@
                 </tr>
             </thead>
             <tbody>
-                {% for member in members%} 
+                {% for member in members %}
                 <tr>
                     <td>
                         <img src="{{ member.photo.url }}" class="member-photo"
-                            onerror='
-                                this.onerror=null;
-                                this.src="{{ analogy }}"
-                        '>
+                            onerror="this.onerror=null;this.src='{{ analogy }}'">
                     </td>
                     <td>{{ member.username }}</td>
-                    <td>{{ member.email }}</td> 
+                    <td>{{ member.email }}</td>
                     <td>{{ member.role }}</td>
                     <td class="text-end">
-                        <a href="#" class="btn btn-sm btn-outline-primary">View profile</a> <!-- TODO a{a%a url 'view_profile' member.id a%a}a-->
+                        <a href="#" class="btn btn-sm btn-outline-primary">View profile</a> <!-- TODO a{a%a url 'view_profile' member.id a%a}a -->
+
                         {% if user.id == group.owner.id and user.email != member.email %}
-                            <a href="{% url 'delete_member' group.id member.id %}" class="btn btn-sm btn-outline-danger">Delete</a> <!-- TODO  -->
-                        {% endif %}
-                        {% if user.email == member.email and user.id != group.owner.id %}
-                        `   <a href="{% url 'leave_member' group.id %}" class="btn btn-sm btn-outline-danger">Leave</a>
+                            <a href="{% url 'delete_member' group.id member.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                        {% elif user.email == member.email and user.id != group.owner.id %}
+                            <a href="{% url 'leave_member' group.id %}" class="btn btn-sm btn-outline-danger">Leave</a>
                         {% endif %}
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="text-center">No members yet.</td>
+                    <td colspan="5" class="text-center">No members yet.</td>
                 </tr>
                 {% endfor %}
             </tbody>

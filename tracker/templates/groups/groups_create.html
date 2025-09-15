@@ -1,57 +1,58 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Create group{% endblock %}
+{% block title %}Create Group{% endblock %}
 
 {% block extra_styles %}
 <link rel="stylesheet" href="{% static 'tracker/css/groups.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="group-create-container">
-  <h3 class="mb-4 text-center">Create a Group</h3>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="mb-3">
-      <input type="text" class="form-control" name="title"  placeholder="Enter the name of the group..">
-    </div>
+<div class="container my-5 group-create-container">
+    <h3 class="mb-4 text-center">Create a Group</h3>
 
-    <div class="mb-3">
-      <textarea class="form-control" rows="4" name="description" placeholder="Write group's description here.."></textarea>
-    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
 
-    <div class="mb-3 position-relative">
-      <input type="text" class="form-control" id="emailInput" placeholder="Add your co-workers' email.."
-        data-autocomplete-url="{% url 'user_email_autocomplete' %}">
-      <ul class="list-group position-absolute w-100" 
-        id="suggestionsBox" style="z-index:1000; display:none;"></ul>
-    </div>
+        <div class="mb-3">
+            <input type="text" class="form-control" name="title" placeholder="Enter the name of the group..">
+        </div>
 
-    <div id="selectedEmails" class="d-flex flex-wrap gap-2"></div>
-    <input type="hidden" name="emails" id="emailsHidden">
+        <div class="mb-3">
+            <textarea class="form-control" rows="4" name="description" placeholder="Write group's description here.."></textarea>
+        </div>
 
-    <script src="{% static 'tracker/js/email_check.js' %}"></script>
+        <div class="mb-3 position-relative">
+            <input type="text" class="form-control" id="emailInput" placeholder="Add your co-workers' email..."
+                data-autocomplete-url="{% url 'user_email_autocomplete' %}">
+            <ul class="list-group position-absolute w-100" id="suggestionsBox" style="z-index:1000; display:none;"></ul>
+        </div>
+        <div id="selectedEmails" class="d-flex flex-wrap gap-2 mb-3"></div>
+        <input type="hidden" name="emails" id="emailsHidden">
 
-    <div class="mb-3">
-      <label for="groupLogo" class="form-label">Group logo</label>
-      <div class="upload-box" onclick="document.getElementById('groupLogo').click();">
-        Add logo to your group here<br>
-        <small>(click to upload)</small>
-      </div>
-      <input type="file" id="groupLogo" class="form-control d-none" >
-    </div><br>
+        <script src="{% static 'tracker/js/email_check.js' %}"></script>
 
-    {% if form.errors %}
-    <div class="mb-3" style="color: red">    
-        {% for error in form.non_field_errors %}
-            <div style="color:red">{{ error }}</div>
-        {% endfor %}
-    </div>
-    {% endif %} <br>
+        <div class="mb-3">
+            <label for="groupLogo" class="form-label">Group Logo</label>
+            <div class="upload-box p-4 text-center border rounded" style="cursor:pointer;"
+                 onclick="document.getElementById('groupLogo').click();">
+                <strong>Click to upload your group logo</strong><br>
+                <small class="text-muted">(optional)</small>
+            </div>
+            <input type="file" id="groupLogo" class="form-control d-none" name="logo">
+        </div>
 
-    <div class="text-end">
-      <button type="submit" class="btn btn-primary">Create group</button>
-    </div>
-  </form>
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary">Create Group</button>
+        </div>
+    </form>
 </div>
 {% endblock %}
