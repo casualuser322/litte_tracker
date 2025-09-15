@@ -1,9 +1,12 @@
+import json
+
 from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.templatetags.static import static
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 
 from accounts.models import TicketsUser
 from .models import \
@@ -192,25 +195,42 @@ def create_project(request, group_id):
 @login_required
 def project_details(request, project_id):
     project = get_object_or_404(Project, id=project_id)
+
     if request.user not in project.members.all() and request.user != project.owner:
         return redirect('project_list')
-    
-    tickets = project.tickets.all()
-    open_tickets = tickets.filter(status='open').all()
-    in_progress_tickets = tickets.filter(status='in_progress').all()
-    testing_tickets = tickets.filter(status='testing').all()
-    done_tickets = tickets.filter(status='done').all()
-    closed_tickets = tickets.filter(status='closed').all()
 
-    return render(request, 'projects/project_details.html', {
-        'project': project,
-        'tickets': tickets,
-        # 'open_tickets': open_tickets,
-        # 'in_progress_tickets': in_progress_tickets,
-        # 'testing_tickets': testing_tickets,
-        # 'done_tickets': done_tickets,
-        # 'closed_tickets': closed_tickets,
-    })
+    tickets = project.tickets.all()
+
+    statuses = [
+        {"key": "open", "label": "Open", "badge_class": "bg-secondary"},
+        {"key": "in_progress", "label": "In Progress", "badge_class": "bg-warning text-dark"},
+        {"key": "testing", "label": "Testing", "badge_class": "bg-info text-dark"},
+        {"key": "done", "label": "Done", "badge_class": "bg-success"},
+        {"key": "closed", "label": "Closed", "badge_class": "bg-dark text-white"},
+    ]
+
+    context = {
+        "project": project,
+        "tickets": tickets,
+        "statuses": statuses,
+    }
+
+    return render(request, 'projects/project_details.html', context)
+
+@csrf_exempt
+def update_task_status(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        task_id = data.get('task_id')
+        status = data.get('status')
+        try:
+            task = Ticket.objects.get(id=task_id)
+            task.status = status
+            task.save()
+            return JsonResponse({'success': True})
+        except Ticket.DoesNotExist:
+            return JsonResponse({'success': False}, status=404)
+    return JsonResponse({'success': False}, status=400)
 
 @login_required
 def ticket_detail(request, ticket_id):

@@ -22,7 +22,13 @@
     padding: 0.75rem;
     margin-bottom: 0.75rem;
     cursor: grab;
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 .kanban-card .badge {
     font-size: 0.8rem;
+}
+.kanban-column.drag-over {
+    background-color: #e2e6ea;
 }
