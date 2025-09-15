@@ -19,6 +19,7 @@ urlpatterns = [
     ),
     path("invitation/send/<int:group_id>", views.send_invitation, name='send_invitation'),
     path("projects/", view=views.project_list , name="project_list"),
+    path("projects/delete/<int:project_id>", views.delete_project, name="delete_project"),
     path("projects/create/<int:group_id>/", views.create_project, name="create_project"),
     path("projects/<int:project_id>/", view=views.project_details, name="project_details"),
     path("projects/<int:project_id>/create-ticket", view=views.create_ticket, name="create_ticket"),

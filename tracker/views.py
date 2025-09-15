@@ -95,7 +95,6 @@ def leave_group_member(request, group_id):
     user = request.user
     group = get_object_or_404(TrackerGroup, id=group_id)
 
-    # Prevent owner from leaving their own group
     if group.owner == user:
         messages.error(request, "Group owners cannot leave their own group.")
         return redirect(request.META.get("HTTP_REFERER", "group_list"))
@@ -107,6 +106,15 @@ def leave_group_member(request, group_id):
         messages.warning(request, "You are not a member of this group.")
 
     return redirect(request.META.get("HTTP_REFERER", "group_list"))
+
+def delete_project(request, project_id):
+    admini = request.user
+    project = get_object_or_404(Project, id=project_id)
+
+    if admini.id == project.owner.id:
+        project.delete()
+
+    return redirect(request.META.get("HTTP_REFERER", "group_view"))
 
 
 def user_email_autocomplete(request):
