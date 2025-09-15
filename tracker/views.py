@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.http import JsonResponse
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.templatetags.static import static
 from django.shortcuts import render, redirect, get_object_or_404
@@ -17,8 +18,6 @@ def group_list(request):
 
     owned_groups = user.owned_groups.all()          
     member_groups = user.attached_groups.all()
-    for mem in member_groups:
-        print(mem)
 
     return render(request, 'groups/groups_main.html', {
         'owned_groups': owned_groups,
@@ -56,8 +55,6 @@ def create_group(request):
             form.save_m2m()
             messages.success(request, 'Group is created!')
             return redirect('group_list')
-        else:
-            print(form.errors)
     else:
         form = GroupForm()
     
@@ -262,27 +259,28 @@ def ticket_detail(request, ticket_id):
 @login_required
 def create_ticket(request, project_id):
     project = get_object_or_404(Project, id=project_id)
+
     if request.user not in project.members.all() and request.user != project.owner:
         return redirect('project_list')
-    
+
     if request.method == 'POST':
-        form = TicketForm(request.POST)
+        form = TicketForm(request.POST, project=project)  
         if form.is_valid():
             ticket = form.save(commit=False)
             ticket.project = project
             ticket.creator = request.user
             ticket.save()
-            messages.success("Ticket created!")
-
-            return redirect('project_detail', project_id=project.id)
-    
+            messages.success(request, "Ticket created!")
+            return redirect('project_details', project_id=project.id)
+        else:
+            print(form.errors)
     else:
-        form = TicketForm()
-        form.fields['assigne'].queryset = project.members.all()
-    
-    return render(request, 'tickets/ticket_form.html', {
+        form = TicketForm(project=project)
+
+    return render(request, 'tickets/create_ticket.html', {
         'form': form,
         'project': project,
+        'today': timezone.now().date(),
     })
 
 @login_required

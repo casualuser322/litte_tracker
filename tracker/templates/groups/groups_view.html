@@ -30,11 +30,13 @@
         {% empty %}
         <p>
             No projects yet. 
-            <br><br>
-            <a href="{% url 'create_project' group.id %}" class="btn btn-sm btn-outline-primary">Create project</a>
         </p>
         {% endfor %}
     </div>
+    <br><br>
+    <p>
+        <a href="{% url 'create_project' group.id %}" class="btn btn-sm btn-outline-primary">Create project</a>
+    </p>
 
     <hr class="my-5">
     <h4 class="mb-4">Members</h4>

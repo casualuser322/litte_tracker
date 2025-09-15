@@ -29,7 +29,6 @@ class TicketForm(forms.ModelForm):
         fields = (
             'title',
             'description',
-            'status',
             'priority',
             'ticket_type',
             'due_data',
@@ -39,6 +38,31 @@ class TicketForm(forms.ModelForm):
             'due_data': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'description': forms.Textarea(attrs={'rows': 4}),
         }
+
+class TicketForm(forms.ModelForm):
+    class Meta:
+        model = Ticket
+        fields = (
+            'title',
+            'description',
+            'priority',
+            'ticket_type',
+            'due_data',
+            'assigne',
+        )
+        widgets = {
+            'due_data': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'description': forms.Textarea(attrs={'rows': 4}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        project = kwargs.pop("project", None)
+        super().__init__(*args, **kwargs)
+
+        if project:
+            self.fields['assigne'].queryset = project.members.all()
+
+        self.fields['assigne'].empty_label = "— No assignee —"
 
 class CommentForm(forms.ModelForm):
     class Meta:
