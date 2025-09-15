@@ -26,44 +26,21 @@
     </div>
   </div>
 
-  <!-- TODO add managment buttons to owned groups -->
-  <!-- TODO maybe separate blocks with owned groups and regular -->
   <div class="md-0" style="margin-top: 40px;">
     {% if owned_groups %}
-    <h3>Owned groups</h3><br>
-    {% for group in owned_groups %}
-    <div class="group-card-wrapper position-relative">
-      <a href="{% url 'group_view' group.id %}" class="group-card">
-          <img src="{% static 'tracker/img/group.png' %}" class="member-photo">
-          <div class="">{{ group.title }}</div>
-          <small class="text-muted">{{ group.user_set.count }} members</small>
-      </a>
-
-      {% if group.owner == request.user %}
-        <form method="post" action="{% url 'group_delete' group.id %}" class="position-absolute top-0 end-0 m-1">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-sm btn-outline-danger" 
-                    onclick="return confirm('Are you sure you want to delete this group?');">
-                Delete
-            </button>
-        </form>
-        {% endif %}
-    </div>
-    {% endfor %}
+      <h3>Owned groups</h3><br>
+      {% for group in owned_groups %}
+        {% include "groups/group_card.html" with group=group is_owner=True %}
+      {% endfor %}
     {% endif %}
+
     {% if member_groups %}
-    <h3>Groups</h3><br>
-    {% for group in member_groups %}
-    <div class="group-card-wrapper position-relative">
-      <a href="{% url 'group_view' group.id %}" class="group-card">
-          <img src="{% static 'tracker/img/group.png' %}" class="member-photo">
-          <div class="">{{ group.title }}</div>
-          <small class="text-muted">{{ group.user_set.count }} members</small>
-      </a>
-    </div>
-    {% empty %}
-    <h4>You don't have any groups yet</h4>
-    {% endfor %}
+      <h3>Groups</h3><br>
+      {% for group in member_groups %}
+        {% include "tracker/group_card.html" with group=group is_owner=False %}
+      {% empty %}
+        <h4>You don't have any groups yet</h4>
+      {% endfor %}
     {% endif %}
   </div>
 </div>
