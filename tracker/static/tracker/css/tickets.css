@@ -1,0 +1,28 @@
+.kanban-board {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 1rem 0;
+}
+.kanban-column {
+    flex: 1 0 250px;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    min-height: 650px;
+}
+.kanban-column h5 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+.kanban-card {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.1rem 0.25rem rgba(0,0,0,0.1);
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    cursor: grab;
+}
+.kanban-card .badge {
+    font-size: 0.8rem;
+}
