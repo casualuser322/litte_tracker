@@ -1,18 +1,22 @@
 import json
 
+from django import forms 
 from django.contrib import messages
 from django.http import JsonResponse
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.templatetags.static import static
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from django.forms import modelformset_factory
 
 from accounts.models import TicketsUser
 from .models import \
-    Attachment, Comment, Invitation, TrackerGroup, Project, Ticket
+    Attachment, Comment, Invitation, TrackerGroup, Project, Ticket, SubTask
 from .forms import \
-    AttachmentForm, CommentForm, GroupForm, ProjectForm, TicketForm
+    AttachmentForm, CommentForm, GroupForm, \
+        SubTaskForm, ProjectForm, TicketForm
 
 
 @login_required
@@ -95,7 +99,6 @@ def leave_group_member(request, group_id):
     user = request.user
     group = get_object_or_404(TrackerGroup, id=group_id)
 
-    # Prevent owner from leaving their own group
     if group.owner == user:
         messages.error(request, "Group owners cannot leave their own group.")
         return redirect(request.META.get("HTTP_REFERER", "group_list"))
@@ -107,6 +110,15 @@ def leave_group_member(request, group_id):
         messages.warning(request, "You are not a member of this group.")
 
     return redirect(request.META.get("HTTP_REFERER", "group_list"))
+
+def delete_project(request, project_id):
+    admini = request.user
+    project = get_object_or_404(Project, id=project_id)
+
+    if admini.id == project.owner.id:
+        project.delete()
+
+    return redirect(request.META.get("HTTP_REFERER", "group_view"))
 
 
 def user_email_autocomplete(request):
@@ -167,16 +179,15 @@ def create_project(request, group_id):
     user = request.user
     if request.method == 'POST':
         form = ProjectForm(request.POST)
-        emails = request.POST.get("emails", "").split(",")  # emails from hidden input
+        emails = request.POST.get("emails", "").split(",")
 
         if form.is_valid():
             project = form.save(commit=False)
             project.owner = user
             project.attached_group = get_object_or_404(TrackerGroup, id=group_id)
             project.save()
-            project.members.add(user)  # owner always included
+            project.members.add(user)
 
-            # Add coworkers if they exist
             for email in emails:
                 email = email.strip()
                 if not email:
@@ -207,7 +218,11 @@ def project_details(request, project_id):
         {"key": "testing", "label": "Testing", "badge_class": "bg-info text-dark"},
         {"key": "done", "label": "Done", "badge_class": "bg-success"},
         {"key": "closed", "label": "Closed", "badge_class": "bg-dark text-white"},
+        {"key": "low", "label": "Low", "badge_class": "badge-success"},
+        {"key": "medium", "label": "Medium", "badge_class": "badge-warning"},
+        {"key": "high", "label": "High", "badge_class": "badge-danger"},
     ]
+
 
     context = {
         "project": project,
@@ -233,6 +248,34 @@ def update_task_status(request):
     return JsonResponse({'success': False}, status=400)
 
 @login_required
+@require_POST
+def add_subtask(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    user = request.user
+
+    if request.method == 'POST':
+        subtask = SubTask.objects.create(
+            ticket=ticket,
+            text=request.POST.get('subtask')
+        )
+
+    return redirect(request.META.get("HTTP_REFERER", "ticket_detail"))
+
+@require_POST
+def update_task_ajax(request, ticket_id, pk):
+    try:
+        task = SubTask.objects.get(pk=pk, ticket_id=ticket_id)  # Если SubTask привязан к Ticket
+    except SubTask.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Task not found"}, status=404)
+
+    data = json.loads(request.body)
+    task.is_done = data.get("completed", False)
+    task.save()
+
+    return JsonResponse({"success": True, "is_done": task.is_done})
+
+
+@login_required
 def ticket_detail(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     if request.user not in ticket.project.members.all() and request.user != ticket.project.owner:
@@ -240,8 +283,29 @@ def ticket_detail(request, ticket_id):
     
     comments = ticket.comments.all()
     attachments = ticket.attachments.all()
+    subtasks = ticket.subtasks.all()
+    project = get_object_or_404(Project, id=ticket.project.id)
+
+    SubTaskFormSet = modelformset_factory(
+        SubTask,
+        fields=("text", "is_done"),
+        extra=0,
+        widgets={
+            "text": forms.TextInput(attrs={"class": "form-control"}),
+            "is_done": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
+    )
 
     if request.method == 'POST':
+        form = TicketForm(request.POST, instance=ticket)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Ticket updated successfully!')
+            return redirect('ticket_detail', ticket_id=ticket.id)
+        else:
+            form = TicketForm(instance=ticket, project=ticket.project)
+
+
         if 'add_comment' in request.POST:
             comment_form = CommentForm(request.POST)
             if comment_form.is_valid():
@@ -250,30 +314,54 @@ def ticket_detail(request, ticket_id):
                 comment.author = request.user
                 comment.save()
                 messages.success(request, 'Comment added!')
-
                 return redirect('ticket_detail', ticket_id=ticket.id)
+        else:
+            comment_form = CommentForm()
         
-        elif 'add_attachment' in request.POST:
-            attachment_form = AttachmentForm(request.POST)
+        if 'add_attachment' in request.POST:
+            attachment_form = AttachmentForm(request.POST, request.FILES)
             if attachment_form.is_valid():
                 attachment = attachment_form.save(commit=False)
                 attachment.ticket = ticket
                 attachment.uploaded_by = request.user
                 attachment.save()
                 messages.success(request, 'File attached!')
-
                 return redirect('ticket_detail', ticket_id=ticket.id)
-        
+        else:
+            attachment_form = AttachmentForm()
+
+        if 'update_subtasks' in request.POST:
+            formset = SubTaskFormSet(request.POST, queryset=subtasks)
+            if formset.is_valid():
+                formset.save()
+                messages.success(request, 'Subtasks updated!')
+                return redirect('ticket_detail', ticket_id=ticket.id)
+        else:
+            formset = SubTaskFormSet()
+
+        if 'add_subtask' in request.POST:
+            new_text = request.POST.get("new_subtask")
+            if new_text:
+                SubTask.objects.create(ticket=ticket, text=new_text)
+                messages.success(request, 'Subtask added!')
+                return redirect('ticket_detail', ticket_id=ticket.id)
+            
+
     else:
         comment_form = CommentForm()
         attachment_form = AttachmentForm()
+        formset = SubTaskFormSet(queryset=subtasks)
+
     
     return render(request, 'tickets/ticket_detail.html', {
+        'project': project,
         'ticket': ticket,
         'comments': comments,
         'attachments': attachments,
         'comment_form': comment_form,
         'attachment_form': attachment_form,
+        'formset': formset,
+        'PRIORITY_CHOICES': Ticket.PRIORITY_CHOICES,
     })
 
 @login_required

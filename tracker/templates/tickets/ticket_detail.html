@@ -1,61 +1,107 @@
-{% extends 'base.html' %}
-{% load static%}
-
-{% block title %}{% endblock %} <!-- TODO -->
-
-{% block extra_styles %}
-{% endblock %}
+{% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="container">
-    <h1>{{ ticket.title }}</h1>
-    <p>Проект: <a href="{% url 'tickets:project_detail' ticket.project.id %}">{{ ticket.project.name }}</a></p>
-    <p>Статус: {{ ticket.get_status_display }}</p>
-    <p>Приоритет: {{ ticket.get_priority_display }}</p>
-    <p>Тип: {{ ticket.get_type_display }}</p>
-    <p>Создатель: {{ ticket.creator.username }}</p>
-    <p>Исполнитель: {% if ticket.assignee %}{{ ticket.assignee.username }}{% else %}Не назначен{% endif %}</p>
-    <p>Срок выполнения: {% if ticket.due_date %}{{ ticket.due_date }}{% else %}Не установлен{% endif %}</p>
-    
-    <h2>Описание</h2>
-    <p>{{ ticket.description }}</p>
-    
-    <a href="{% url 'tickets:update_ticket' ticket.id %}" class="btn btn-primary">Редактировать</a>
-    
-    <h2>Комментарии</h2>
-    {% for comment in comments %}
-        <div class="card mb-2">
-            <div class="card-body">
-                <h5 class="card-title">{{ comment.author.username }}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{ comment.created_at }}</h6>
-                <p class="card-text">{{ comment.text }}</p>
+<div class="container my-5">
+    <h2 class="text-center mb-5">{{ ticket.title }}</h2>
+    <div class="card shadow-sm p-4">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <input type="text" name="title" class="form-control" value="{{ ticket.title }}" required>
             </div>
-        </div>
-    {% endfor %}
-    
-    <form method="post" action="{% url 'tickets:ticket_detail' ticket.id %}">
-        {% csrf_token %}
-        {{ comment_form.as_p }}
-        <button type="submit" name="add_comment" class="btn btn-primary">Добавить комментарий</button>
-    </form>
-    
-    <h2>Вложения</h2>
-    {% for attachment in attachments %}
-        <div class="card mb-2">
-            <div class="card-body">
-                <h5 class="card-title">{{ attachment.file.name }}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">
-                    Загружено {{ attachment.uploaded_by.username }} в {{ attachment.uploaded_at }}
-                </h6>
-                <a href="{{ attachment.file.url }}" class="btn btn-primary">Скачать</a>
+
+            <div class="mb-3">
+                <select name="assigne" value="{{ ticket.assigne }}" class="form-select">
+                    <option value="{{ ticket.owner }}">Assign to..</option>
+                    {% for mem in project.members.all %}
+                    <option value="{{ mem.id }}">{{ mem.username }}</option>
+                    {% endfor %}
+                </select>
             </div>
-        </div>
-    {% endfor %}
-    
-    <form method="post" action="{% url 'tickets:ticket_detail' ticket.id %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ attachment_form.as_p }}
-        <button type="submit" name="add_attachment" class="btn btn-primary">Прикрепить файл</button>
-    </form>
+
+            <div class="d-flex gap-3 mb-3">
+                <label for="priority">Choose task's type:</label>
+                <select type="text" name="ticket_type" class="form-control" >
+                    <option value="task">Task</option>
+                    <option value="bug">Bug</option>
+                    <option value="feature">Feature</option>
+                </select>
+            </div>
+
+            <div class="d-flex gap-3 mb-3">
+                <label for="priority">Choose task's priority:</label>
+                <select name="priority" class="form-control"  >
+                    {% for val, label in PRIORITY_CHOICES %}
+                        <option value="{{ val }}" {% if val == ticket.priority %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <textarea name="description" class="form-control" rows="3">{{ ticket.description }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                {% if ticket.subtasks.all %}
+                    <h5>Subtasks</h5>
+                    <ul id="subtask-list" class="list-group mb-3">
+                    {% for subtask in ticket.subtasks.all %}
+                        <li class="list-group-item d-flex align-items-center" data-id="{{ subtask.id }}">
+                            <input type="checkbox"
+                                data-ticket="{{ ticket.id }}"
+                                data-task="{{ subtask.id }}"
+                                {% if subtask.is_done %}checked{% endif %}>
+                            <span>{{ subtask.text }}</span>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <script>
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                    cb.addEventListener('change', function() {
+                        const ticketId = this.dataset.ticket;
+                        const taskId = this.dataset.task;
+
+                        const url = "{% url 'update_task_ajax' ticket_id=0 pk=0 %}"
+                            .replace("0", ticketId)
+                            .replace("0", taskId);
+
+                        fetch(url, {
+                            method: "POST",
+                            headers: {
+                                "X-CSRFToken": "{{ csrf_token }}",
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ completed: this.checked })
+                        });
+                    });
+                });
+                </script>
+
+                <div class="input-group">
+                    <input type="text" name="new_subtask" id="new-subtask" class="form-control" placeholder="Add task...">
+                    <button type='submit' class="btn btn-outline-success" id="add-subtask-btn" name="add_subtask">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <input type="date" name="due_data" class="form-control"
+                        value="{{ ticket.due_data|date:'Y-m-d' }}">
+            </div>
+
+            <div class="mb-3">
+                <input type="file" name="attachments" class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Save</button>
+        </form>
+    </div>
 </div>
 {% endblock %}

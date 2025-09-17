@@ -10,6 +10,7 @@
     border-radius: 0.5rem;
     padding: 0.5rem;
     min-height: 650px;
+    max-width: 600px;
 }
 .kanban-column h5 {
     text-align: center;

@@ -16,15 +16,17 @@
         {% for project in projects %}
         <div class="col">
             <div class="card shadow-sm h-100 position-relative">
-                <a href="{% url 'project_details' project.id %}" class="stretched-link"></a>
+                <a href="{% url 'project_details' project.id %}" 
+                class="stretched-link" 
+                style="z-index: 1; pointer-events: auto;"></a>
 
-                <div class="card-body text-center">
-                    <h5 class="card-title">{{ project.name }}</h5>
+                <div class="card-body text-center d-flex flex-column justify-content-between h-100">
+                    <h5 class="card-title mb-2">{{ project.title }}</h5>
                     <p class="text-muted">{{ project.members.count }} members</p>
-                    <div class="d-flex justify-content-around mt-3">
-                        <a href="#" class="btn btn-sm btn-outline-primary">Add members</a> <!-- TODO a{a%a url 'add_members' project.id a%a}a -->
-                        <a href="#" class="btn btn-sm btn-outline-warning">Edit</a> <!-- TODO a{a%a url 'edit_project' project.id a%a}a -->
-                        <a href="#" class="btn btn-sm btn-outline-danger">Delete</a> <!-- TODO a{a%a url 'delete_project' project.id a%a}a -->
+
+                    <div class="mt-auto d-flex justify-content-around" style="pointer-events: auto; z-index: 2;">
+                        <a href="#" class="btn btn-sm btn-outline-warning">Edit</a>
+                        <a href="{% url 'delete_project' project.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
                     </div>
                 </div>
             </div>
