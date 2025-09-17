@@ -16,17 +16,14 @@
         {% for project in projects %}
         <div class="col">
             <div class="card shadow-sm h-100 position-relative">
-                <!-- Full card clickable overlay -->
                 <a href="{% url 'project_details' project.id %}" 
                 class="stretched-link" 
                 style="z-index: 1; pointer-events: auto;"></a>
 
-                <!-- Card body -->
                 <div class="card-body text-center d-flex flex-column justify-content-between h-100">
                     <h5 class="card-title mb-2">{{ project.title }}</h5>
                     <p class="text-muted">{{ project.members.count }} members</p>
 
-                    <!-- Buttons: keep them clickable -->
                     <div class="mt-auto d-flex justify-content-around" style="pointer-events: auto; z-index: 2;">
                         <a href="#" class="btn btn-sm btn-outline-warning">Edit</a>
                         <a href="{% url 'delete_project' project.id %}" class="btn btn-sm btn-outline-danger">Delete</a>

@@ -1,5 +1,6 @@
 from django import forms 
-from .models import Attachment, Comment, Invitation, TrackerGroup, Project, Ticket
+from .models import Attachment, Comment, Invitation, \
+    Project, SubTask, TrackerGroup, Ticket
 
 
 class GroupForm(forms.ModelForm):
@@ -32,37 +33,21 @@ class TicketForm(forms.ModelForm):
             'priority',
             'ticket_type',
             'due_data',
-            'assigne',
         )
         widgets = {
             'due_data': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'description': forms.Textarea(attrs={'rows': 4}),
         }
 
-class TicketForm(forms.ModelForm):
+class SubTaskForm(forms.ModelForm):
     class Meta:
-        model = Ticket
-        fields = (
-            'title',
-            'description',
-            'priority',
-            'ticket_type',
-            'due_data',
-            'assigne',
-        )
+        model = SubTask
+        fields = ("text", "is_done")
         widgets = {
-            'due_data': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            'description': forms.Textarea(attrs={'rows': 4}),
+            "text": forms.TextInput(attrs={"class": "form-control", "placeholder": "Add task"}),
+            "is_done": forms.CheckboxInput(attrs={"class": "form-check-input"})
         }
 
-    def __init__(self, *args, **kwargs):
-        project = kwargs.pop("project", None)
-        super().__init__(*args, **kwargs)
-
-        if project:
-            self.fields['assigne'].queryset = project.members.all()
-
-        self.fields['assigne'].empty_label = "— No assignee —"
 
 class CommentForm(forms.ModelForm):
     class Meta:

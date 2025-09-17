@@ -18,21 +18,22 @@
     <div id="kanban-board" data-update-url="{% url 'update_task_status' %}">
         <div class="kanban-board">
             {% for status in statuses %}
-            <div class="kanban-column" data-status="{{ status.key }}">
-                <h5>{{ status.label }}</h5>
-                {% for task in tickets %}
-                    {% if task.status == status.key %}
-                    <a href="{% url 'ticket_detail' task.id %}" class="kanban-card" draggable="true" data-task-id="{{ task.id }}">
-                        <div class="fw-bold">{{ task.name }}</div>
-                        <div class="text-truncate">{{ task.description|truncatewords:15 }}</div>
-                        <div class="mt-2 d-flex justify-content-between align-items-center">
-                            <span class="badge {{ status.badge_class }}">{{ task.status|title }}</span>
-                            <small class="text-muted">{{ task }}</small>
-                        </div>
-                    </a>
-                    {% endif %}
-                {% endfor %}
-            </div>
+                <div class="kanban-column" data-status="{{ status.key }}">
+                    <h5>{{ status.label }}</h5>
+                    {% for task in tickets %}
+                        {% if task.status == status.key %}
+                            <a href="{% url 'ticket_detail' task.id %}" class="kanban-card" draggable="true" data-task-id="{{ task.id }}">
+                                <div class="fw-bold">{{ task.title }}</div>
+                                <div class="text-truncate">{{ task.description|truncatewords:15 }}</div>
+                                <div class="mt-2 d-flex justify-content-between align-items-center">
+                                    <span class="badge {{ status.badge_class }}">{{ task.status|title }}</span>
+                                    <span class="badge {{ status.badge_class  }}">{{ task.priority|title }}</span>
+                                    <small class="text-muted">{{ task }}</small>
+                                </div>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             {% endfor %}
         </div>
     </div>

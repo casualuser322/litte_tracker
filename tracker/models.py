@@ -111,8 +111,21 @@ class Ticket(models.Model):
         related_name='assigned_tickets',
     )
 
+
     def __str__(self):
         return f'{self.title} ({self.get_status_display()})'
+
+class SubTask(models.Model):
+    ticket = models.ForeignKey(
+        Ticket,
+        on_delete=models.CASCADE,
+        related_name="subtasks"
+    )
+    text = models.CharField(max_length=255)
+    is_done = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.text} ({'done' if self.is_done else 'pending'})"
 
 class Comment(models.Model):
     ticket = models.ForeignKey(
