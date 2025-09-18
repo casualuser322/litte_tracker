@@ -119,3 +119,11 @@ def decline_invitation(request, inv_id):
         invitation.save()
     
     return redirect(request.META.get("HTTP_REFERER", "profile"))
+
+def user_view(request, pk):
+    user = request.user
+    viewing_user = get_object_or_404(TicketsUser, id=pk)
+
+    return render(request, "accounts/user_view.html", {
+        'viewing_user': viewing_user
+    })

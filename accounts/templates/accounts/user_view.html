@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block tiitle %}{{ viewing_user }}{% endblock %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="{% static 'accounts/css/user_view.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="profile-card">
+        <div class="profile-header">
+            {% if viewing_user.avatar %}
+                <img src="{{ viewing_user.avatar.url }}" alt="Avatar">
+            {% else %}
+                <img src="{% static 'tracker/img/invalid.png' %}" alt="Default Avatar">
+            {% endif %}
+            <h2>{{ viewing_user.first_name }} {{ viewing_user.last_name }}</h2>
+            <p>@{{ viewing_user.username }}</p>
+        </div>
+        <div class="profile-body">
+            <h4>Profile Information</h4>
+            
+            <div class="profile-info">
+                <strong>Email:</strong> {{ viewing_user.email }}
+            </div>
+            <div class="profile-info">
+                <strong>First Name:</strong> {{ viewing_user.first_name }}
+            </div>
+            <div class="profile-info">
+                <strong>Last Name:</strong> {{ viewing_user.last_name }}
+            </div>
+            <div class="profile-info">
+                <strong>Joined:</strong> {{ viewing_user.date_joined|date:"d M Y" }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

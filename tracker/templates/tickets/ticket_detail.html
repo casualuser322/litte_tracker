@@ -51,7 +51,7 @@
                     <ul id="subtask-list" class="list-group mb-3">
                     {% for subtask in ticket.subtasks.all %}
                         <li class="list-group-item d-flex align-items-center" data-id="{{ subtask.id }}">
-                            <input type="checkbox"
+                            <input type="checkbox" class="form-check-input me-2"
                                 data-ticket="{{ ticket.id }}"
                                 data-task="{{ subtask.id }}"
                                 {% if subtask.is_done %}checked{% endif %}>
