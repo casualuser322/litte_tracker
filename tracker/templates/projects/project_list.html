@@ -1,10 +1,44 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Sign in{% endblock %} <!-- TODO -->
+{% block title %}My projects{% endblock %}
 
 {% block extra_styles %}
+<link rel="stylesheet" href="{% static 'tracker/css/projects.css' %}">
 {% endblock %}
 
 {% block content %}
+<div class="container my-4">
+  <div class="row align-items-center mb-3">
+    <div class="col-6 text-center">
+      <h3 class="mb-0">Projects</h3>
+    </div>
+    <div class="col-3 text-end">
+      <input type="text" class="search-bar" placeholder="search">
+    </div>
+  </div>
+
+  <div class="row g-4">
+    {% if owned_projects %}
+      <h3>Owned projects</h3>
+      {% for project in owned_projects %}
+        <div class="col-md-4">
+          {% include "projects/project_card.html" with project=project is_owner=True %}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    {% if member_projects %}
+      <h3 class="mt-4">Member projects</h3>
+      {% for project in member_projects %}
+        <div class="col-md-4">
+          {% include "projects/project_card.html" with project=project is_owner=False %}
+        </div>
+      {% empty %}
+        <h4>You don't have any projects yet</h4>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
+
