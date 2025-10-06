@@ -1,0 +1,24 @@
+{% load static %}
+<div class="group-card-wrapper bg-white d-flex align-items-center justify-content-between border rounded p-2 mb-2">
+    <a href="{% url 'project_details' project.id %}" class="d-flex align-items-center text-decoration-none flex-grow-1">
+        <img src="{% static 'tracker/img/group.png' %}" class="member-photo me-2"
+             style="width:40px; height:40px; object-fit:cover; border-radius:50%;">
+        <div>
+            <div class="fw-bold">{{ project.title }}</div>
+            <small class="text-muted">{{ project.members.count }} members</small>
+        </div>
+    </a>
+
+    {% if is_owner %}
+    <form method="post" action="" class="ms-3 mb-0 flex-shrink-0"> <!-- TODO a{a%a url 'group_delete' group.id a%a}a -->
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-danger"
+                onclick="return confirm('Are you sure you want to delete this group?');">
+            Delete
+        </button>
+    </form>
+    {% endif %}
+</div>
+
+
+

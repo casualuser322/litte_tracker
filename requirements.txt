@@ -1,3 +1,5 @@
 django
+gunicorn
 pillow
 python-dotenv
+psycopg2-binary
