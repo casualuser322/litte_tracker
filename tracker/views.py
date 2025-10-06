@@ -166,8 +166,9 @@ def group_delete(request, pk):
 
 @login_required
 def project_list(request):
-    projects = request.user.projects.all()
+    projects = request.user.projects.filter(members=request.user.id)
     owned_projects = request.user.owned_projects.all()
+    print(projects)
 
     return render(request, 'projects/project_list.html', {
         'projects': projects,
