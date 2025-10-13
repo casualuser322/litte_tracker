@@ -6,7 +6,7 @@ urlpatterns = [
     path("groups/list", view=views.group_list, name="group_list"),
     path("groups/create", view=views.create_group, name="create_group"),
     path("groups/<int:group_id>/", views.group_view, name="group_view"),
-    path("groups/<int:pk>/delete/", views.group_delete, name="group_delete"),
+    path("groups/<int:group_id>/<int:pk>/delete/", views.group_delete, name="group_delete"),
     path(
         "groups/delete_member/<int:group_id>/<int:pk>",
         view=views.delete_group_member, 
@@ -48,7 +48,12 @@ urlpatterns = [
         name="create_ticket"
     ),
     path(
-        "tickets/<int:ticket_id>/", 
+        "tickets/list",
+        view=views.ticket_list,
+        name="ticket_list"
+    ),
+    path(
+        "tickets/<int:project_id>/<int:ticket_id>/", 
         view=views.ticket_detail, 
         name="ticket_detail"
     ),
@@ -65,10 +70,10 @@ urlpatterns = [
     path(
         'tickets/<int:ticket_id>/update_status/<int:pk>/',
         views.update_task_ajax,
-        name='update_task_ajax'
+        name='update_task_ajax' 
     ),
     path(
-        "tickets/update-status/",
+        "tickets/update_task_status/<int:project_id>",
         view=views.update_task_status,
         name="update_task_status"
     ),

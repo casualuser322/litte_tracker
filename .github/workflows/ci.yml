@@ -1,0 +1,71 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Ruff (lint)
+        run: ruff check .
+
+      - name: Black (format check)
+        run: black --check .
+
+      - name: MyPy (type check)
+        run: mypy .
+
+  tests:
+    name: Run Django tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: github_ci
+          POSTGRES_USER: github_ci
+          POSTGRES_PASSWORD: github_ci
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd="pg_isready -U github_ci -d github_ci"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-django
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgres://github_ci:github_ci@localhost:5432/github_ci
+        run: |
+          python manage.py migrate
+          pytest -v

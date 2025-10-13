@@ -42,10 +42,11 @@ It allows you to create projects, manage tasks, assign users, and visualize prog
 ```bash
 git clone https://github.com/username/project-tracker.git
 cd project-tracker
-docker-compose up --build
+docker-compose up --build -d
 ```
 App will be available at:  
-👉 http://localhost:8000  
+ http://localhost
+ don't add :8000, this port is reserved  
 
 ### Local run (without Docker)
 ```bash
@@ -56,7 +57,7 @@ python manage.py runserver
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 ```
 accounts/       # User authentication, profiles, signals
     templates/  # Register, login, reset password, profile
@@ -67,12 +68,12 @@ tracker/        # Core app: projects, groups, tickets, Kanban
     static/     # CSS, JS, images for tracker
 requirements.txt
 manage.py
-docker/         # (if added, docker configs)
+docker/         
 ```
 
 ---
 
-## 🔌 API Example
+## API Example
 ```http
 POST /api/tasks/
 {
@@ -85,11 +86,10 @@ POST /api/tasks/
 
 ---
 
-## 💡 What I Learned
-- Building a full-stack web application with **Django + DRF**  
-- Working with **PostgreSQL** and migrations  
-- Containerizing apps using **Docker Compose**  
-- Setting up **GitHub Actions** for CI/CD  
-- Organizing frontend with **Bootstrap + JavaScript**  
-- Designing a **REST API** for external integrations  
-- Structuring Django apps and writing tests  
+## TODO
+- [ ] Fix project edditing
+- [ ] Fix "Race condition" for ticket edditing
+- [ ] Add backlog 
+- [ ] Add django-redis
+- [ ] Handling Ajax errors with toast-notifications
+- [ ] Make loading indicators 

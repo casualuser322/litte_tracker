@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My tasks{% endblock %}
+
+{% block extra_styles%}
+<link rel="stylesheet" href="{% static 'tracker/css/groups.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row align-items-center mb-3">
+        <div class="text-center">
+            <h1 class="mb-0">Tasks</h1>
+        </div>
+
+        <div class="text-end">
+            <input type="text" class="search-bar" placeholder="search">
+        </div>
+    </div><br>
+
+    <div class="md-0" style="margin-top: 40px;">
+        {% if user_tickets %}
+            {% for ticket in user_tickets %}
+                {% include 'tickets/ticket_list_card.html' %}
+            {% endfor %}
+        {% endif %}
+
+        {}
+    </div>
+</div>
+{% endblock %}

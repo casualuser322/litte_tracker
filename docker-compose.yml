@@ -32,18 +32,31 @@ services:
       - app-network
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/healthch || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   nginx:
     image: nginx:1.25-alpine
     ports:
       - "80:80"
     depends_on:
-      - web
+      web:
+        condition: service_healthy
     volumes:
       - ./docker/tracker_nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - static_volume:/tracker/staticfiles/
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
 volumes:
   db_data:

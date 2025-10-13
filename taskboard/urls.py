@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from .views import healthch
 
 urlpatterns = [
     path('tracker/', include("tracker.urls")),
     path('accounts/', include("accounts.urls")),
+    path('healthch', view=healthch, name='healthch'),
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(url='/tracker/', permanent=False))
 ]

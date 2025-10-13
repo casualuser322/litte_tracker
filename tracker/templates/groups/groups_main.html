@@ -18,7 +18,7 @@
     </div>
 
     <div class="col-6 text-center">
-      <h3 class="mb-0">Groups</h3>
+      <h1 class="mb-0">Groups</h1>
     </div>
 
     <div class="col-3 text-end">
@@ -37,7 +37,7 @@
     {% if member_groups %}
       <h3>Groups</h3><br>
       {% for group in member_groups %}
-        {% include "tracker/group_card.html" with group=group is_owner=False %}
+        {% include "groups/group_card.html" with group=group is_owner=False %}
       {% empty %}
         <h4>You don't have any groups yet</h4>
       {% endfor %}

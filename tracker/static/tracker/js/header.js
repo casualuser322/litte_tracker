@@ -1,9 +1,9 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const toggle = document.querySelector('.mobile-menu-toggle');
-    const navList = document.querySelector('.nav-list');
+// document.addEventListener('DOMContentLoaded', function() {
+//     const toggle = document.querySelector('.mobile-menu-toggle');
+//     const navList = document.querySelector('.nav-list');
     
-    toggle.addEventListener('click', function() {
-        navList.classList.toggle('active');
-        this.classList.toggle('active');
-    });
-});
+//     toggle.addEventListener('click', function() {
+//         navList.classList.toggle('active');
+//         this.classList.toggle('active');
+//     });
+// });
