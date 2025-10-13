@@ -1,4 +1,5 @@
 django
+djangorestframework
 gunicorn
 pillow
 python-dotenv
