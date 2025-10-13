@@ -11,4 +11,5 @@ def enable_db_access_for_all_tests(db):
 def client():
     """Фикстура Django test client"""
     from django.test import Client
+
     return Client()

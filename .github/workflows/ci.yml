@@ -84,21 +84,19 @@ jobs:
         cache: 'pip'
     
     - name: Install Ruff
-      run: |
-        pip install ruff
-    
+      run: pip install ruff
+
     - name: Run Ruff linting
-      run: |
-        ruff check --output-format=github .
-    
-    - name: Run Ruff formatting check
-      run: |
-        ruff format --check .
+      run: ruff check --output-format=github .
+
+    - name: Check code formatting
+      run: ruff check . --check
     
     - name: Run mypy
       run: |
         pip install mypy django-stubs
         mypy --ignore-missing-imports accounts tracker
+
 
   security:
     runs-on: ubuntu-latest
