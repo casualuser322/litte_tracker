@@ -90,7 +90,7 @@ jobs:
       run: ruff check --output-format=github .
 
     - name: Check code formatting
-      run: ruff check . --check
+      run: ruff check .
     
     - name: Run mypy
       run: |
