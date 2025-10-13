@@ -79,3 +79,5 @@ pyrightconfig.json
 # Parsec temp build (если у тебя кастомные сборки или кеши)
 build/
 dist/
+
+staticfiles

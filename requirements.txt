@@ -3,3 +3,8 @@ gunicorn
 pillow
 python-dotenv
 psycopg2-binary
+black
+ruff
+mypy
+pytest
+pytest-django

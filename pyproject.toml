@@ -1,0 +1,12 @@
+[tool.black]
+line-length = 79
+target-version = ['py311']
+
+[tool.ruff]
+line-length = 79
+select = ["E", "F", "I", "B", "C4"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+disallow_untyped_defs = true
