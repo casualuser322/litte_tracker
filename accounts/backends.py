@@ -1,5 +1,7 @@
 from django.contrib.auth.backends import ModelBackend
+
 from .models import TicketsUser
+
 
 class EmailBackend(ModelBackend):
     def authenticate(self, request, email=None, password=None, **kwargs):

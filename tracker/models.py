@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User, AbstractUser
 
 
 class TrackerGroup(models.Model):
@@ -11,9 +10,9 @@ class TrackerGroup(models.Model):
         'accounts.TicketsUser',
         on_delete=models.CASCADE,
         related_name="owned_groups",
-    )    
+    )
     members = models.ManyToManyField(
-        'accounts.TicketsUser', 
+        'accounts.TicketsUser',
         related_name="attached_groups",
         blank=True
     )
@@ -92,10 +91,10 @@ class Ticket(models.Model):
     )
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
-    due_data = models.DateTimeField(null=True, blank=True)
+    due_date = models.DateTimeField(null=True, blank=True)
     project = models.ForeignKey(
         Project,
-        on_delete=models.CASCADE, 
+        on_delete=models.CASCADE,
         related_name='tickets',
     )
     creator = models.ForeignKey(
@@ -155,7 +154,7 @@ class Attachment(models.Model):
         on_delete=models.CASCADE,
     )
     uploaded_at = models.DateTimeField(default=timezone.now)
-    
+
     def __str__(self):
         return f"Attachment to {self.ticket.title}"
 
@@ -167,7 +166,7 @@ class Invitation(models.Model):
     ]
     INVITATION_TYPES_CHOICES = [
         ('group', 'Group'),
-        ('project', 'Project'), 
+        ('project', 'Project'),
     ]
 
     owner = models.ForeignKey(
@@ -196,4 +195,3 @@ class Invitation(models.Model):
     )
     created_at = models.DateTimeField(default=timezone.now)
 
-    

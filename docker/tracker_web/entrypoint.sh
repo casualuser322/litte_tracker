@@ -1,15 +1,26 @@
-#!/bin/sh
+#!/bin/bash
+set -e
 
-echo "Waiting for database..."
-while ! nc -z $DB_HOST $DB_PORT; do
-  echo "Waiting for PostgreSQL..."
-  sleep 1
+echo "Waiting for PostgreSQL..."
+while ! nc -z "$DB_HOST" "$DB_PORT"; do
+    sleep 1
 done
+echo "PostgreSQL is available."
 
-echo "Database started"
+echo "Waiting for Redis..."
+while ! nc -z "$REDIS_HOST" "$REDIS_PORT"; do
+    sleep 1
+done  
+echo "Redis is available."
 
+echo "Running database migrations..."
 python manage.py migrate --noinput
 
-python manage.py collectstatic --noinput
+if [ "$DEBUG" = "True" ] && [ -n "$DJANGO_SUPERUSER_EMAIL" ]; then
+    echo "Creating superuser..."
+    python manage.py createsuperuser \
+        --email "$DJANGO_SUPERUSER_EMAIL" \
+        --noinput || true
+fi
 
-exec gunicorn --bind 0.0.0.0:8000 --workers 3 taskboard.wsgi:application
+exec "$@"

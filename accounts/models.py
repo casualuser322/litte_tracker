@@ -1,9 +1,10 @@
+from django.contrib.auth.models import (
+    AbstractUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import \
-    User, AbstractUser, PermissionsMixin, BaseUserManager
-
-from tracker.models import Ticket, Project, TrackerGroup
 
 
 class TicketUserEngine(BaseUserManager):
@@ -27,7 +28,7 @@ class TicketUserEngine(BaseUserManager):
             raise ValueError("Superuser must have is_superuser=True")
 
         return self.create_user(email, password, **extra_fields)
-   
+
 
 class TicketsUser(AbstractUser, PermissionsMixin):
     email = models.EmailField(unique=True)
@@ -52,4 +53,3 @@ class TicketsUser(AbstractUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-    
