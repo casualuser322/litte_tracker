@@ -19,3 +19,4 @@ coverage
 bandit
 safety
 pre-commit
+whitenoise
