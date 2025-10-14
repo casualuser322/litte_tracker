@@ -1,5 +1,6 @@
 django
 djangorestframework
+django-extensions
 gunicorn
 pillow
 python-dotenv
