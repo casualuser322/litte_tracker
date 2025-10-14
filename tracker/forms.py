@@ -1,6 +1,14 @@
-from django import forms 
-from .models import Attachment, Comment, Invitation, \
-    Project, SubTask, TrackerGroup, Ticket
+from django import forms
+from django.core.exceptions import ValidationError
+
+from .models import (
+    Attachment,
+    Comment,
+    Project,
+    SubTask,
+    Ticket,
+    TrackerGroup,
+)
 
 
 class GroupForm(forms.ModelForm):
@@ -20,7 +28,7 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = (
-            "title", 
+            "title",
             "description"
         )
 
@@ -32,10 +40,10 @@ class TicketForm(forms.ModelForm):
             'description',
             'priority',
             'ticket_type',
-            'due_data',
+            'due_date',
         )
         widgets = {
-            'due_data': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'due_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'description': forms.Textarea(attrs={'rows': 4}),
         }
 
@@ -57,7 +65,20 @@ class CommentForm(forms.ModelForm):
             'text': forms.Textarea(attrs={'rows': 3})
         }
 
-class AttachmentForm(forms.ModelForm):
+class SecureAttachmentForm(forms.ModelForm):
     class Meta:
         model = Attachment
-        fields = ('attached_file',)
+        fields = ['attached_file']
+
+    def clean_attached_file(self):
+        file = self.cleaned_data.get('attached_file')
+        if file:
+            if file.size > 10 * 1024 * 1024:
+                raise ValidationError("File size must be under 10MB")
+
+            allowed_extensions = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png']
+            ext = file.name.split('.')[-1].lower()
+            if ext not in allowed_extensions:
+                raise ValidationError(f"File type not allowed. Allowed: {', '.join(allowed_extensions)}")
+
+        return file

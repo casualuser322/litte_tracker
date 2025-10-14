@@ -1,15 +1,14 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm
 
 from .models import TicketsUser
-from tracker.models import TrackerGroup, Project, Ticket
 
 
 class RegisterForm(UserCreationForm):
     class Meta:
         model = TicketsUser
         fields = (
-            'email', 
+            'email',
             'username',
             'first_name',
             'last_name',
@@ -31,11 +30,11 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = TicketsUser
         fields = [
-            'email', 
-            'username', 
-            'first_name', 
-            'last_name', 
-            'password', 
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'password',
             'profile_image'
         ]
 

@@ -1,31 +1,40 @@
 import json
 
 from django import forms
-from django.urls import reverse
 from django.contrib import messages
-from django.http import JsonResponse
-from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from django.templatetags.static import static
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.csrf import csrf_protect
 from django.forms import modelformset_factory
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_POST
 
 from accounts.models import TicketsUser
-from .models import \
-    Attachment, Comment, Invitation, TrackerGroup, Project, Ticket, SubTask
-from .forms import \
-    AttachmentForm, CommentForm, GroupForm, \
-        SubTaskForm, ProjectForm, TicketForm
+
 from .decorators import group_access_required, project_access_required
+from .forms import (
+    CommentForm,
+    GroupForm,
+    ProjectForm,
+    SecureAttachmentForm,
+    TicketForm,
+)
+from .models import (
+    Invitation,
+    Project,
+    SubTask,
+    Ticket,
+    TrackerGroup,
+)
 
 
 @login_required
 def group_list(request):
     user = request.user
 
-    owned_groups = user.owned_groups.all()          
+    owned_groups = user.owned_groups.all()
     member_groups = user.attached_groups.all()
 
     return render(request, 'groups/groups_main.html', {
@@ -66,7 +75,7 @@ def create_group(request):
             return redirect('group_list')
     else:
         form = GroupForm()
-    
+
     return render(request, 'groups/groups_create.html', {
         'form': form,
     })
@@ -80,11 +89,11 @@ def group_view(request, group_id, group=None):
         .prefetch_related('members', 'tickets')
         .order_by('-created_at')
     )
-    
+
     all_members = group.members.all()
     if not all_members.filter(id=group.owner.id).exists():
         all_members = list(all_members) + [group.owner]
-    
+
     return render(request, "groups/groups_view.html",  {
         "group":    group,
         "projects": projects,
@@ -95,11 +104,11 @@ def group_view(request, group_id, group=None):
 
 @login_required
 @group_access_required
-def delete_group_member(request, group_id, pk):
+def delete_group_member(request, group_id, pk, group=None):
     user = request.user
     group = get_object_or_404(TrackerGroup, id=group_id)
 
-    if user.id == group.owner.id:
+    if user.id == group.owner.id and pk in group.attached_groups.all():
         group.members.remove(pk)
 
     return redirect(request.META.get("HTTP_REFERER", reverse("group_view")))
@@ -113,17 +122,17 @@ def leave_group_member(request, group_id):
         if group.members.filter(id=user.id).exists():
             group.members.remove(user)
             messages.success(
-                request, 
+                request,
                 f"You left the group {group.title}."
             )
         else:
             messages.warning(
-                request, 
+                request,
                 "You are not a member of this group."
             )
     else:
         messages.error(
-            request, 
+            request,
             "Group owners cannot leave their own group."
         )
 
@@ -156,8 +165,8 @@ def send_invitation(request, group_id, group=None):
     if emails:
         if group.owner.id == current_user.id:
             for email in [
-                            e.strip() 
-                            for e in emails.split(",") 
+                            e.strip()
+                            for e in emails.split(",")
                             if e.strip()
                         ]:
                 try:
@@ -178,7 +187,7 @@ def send_invitation(request, group_id, group=None):
 
     return redirect(
         request.META.get(
-            "HTTP_REFERER", 
+            "HTTP_REFERER",
             reverse("group_view", args=[group_id])
         )
     )
@@ -190,7 +199,7 @@ def group_delete(request, group_id, pk, group=None):
         if group.owner == request.user:
             group.delete()
             messages.success(
-                request, 
+                request,
                 "Group deleted successfully!"
             )
         else:
@@ -239,7 +248,7 @@ def create_project(request, group_id, group=None):
             return redirect('project_list')
     else:
         form = ProjectForm()
-    
+
     return render(request, 'projects/create_project.html', {'form': form})
 
 @login_required
@@ -249,28 +258,28 @@ def project_details(request, project_id, project=None):
 
     statuses = [
         {
-            "key": "open", 
-            "label": "Open", 
+            "key": "open",
+            "label": "Open",
             "badge_class": "bg-secondary"
         },
-        {   
-            "key": "in_progress", 
-            "label": "In Progress", 
+        {
+            "key": "in_progress",
+            "label": "In Progress",
             "badge_class": "bg-warning text-dark"
         },
         {
-            "key": "testing", 
-            "label": "Testing", 
+            "key": "testing",
+            "label": "Testing",
             "badge_class": "bg-info text-dark"
         },
-        {   
-            "key": "done", 
-            "label": "Done", 
+        {
+            "key": "done",
+            "label": "Done",
             "badge_class": "bg-success"
         },
         {
-            "key": "closed", 
-            "label": "Closed", 
+            "key": "closed",
+            "label": "Closed",
             "badge_class": "bg-dark text-white"
         },
     ]
@@ -311,7 +320,7 @@ def update_task_status(request, project_id, project=None):
         valid_statuses = [choice[0] for choice in Ticket.STATUS_CHOICES]
         if status not in valid_statuses:
             return JsonResponse({
-                'success': False, 
+                'success': False,
                 'error': 'Invalid status'
             }, status=400)
 
@@ -333,10 +342,9 @@ def update_task_status(request, project_id, project=None):
 @require_POST
 def add_subtask(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
-    user = request.user
 
     if request.method == 'POST':
-        subtask = SubTask.objects.create(
+        SubTask.objects.create(
             ticket=ticket,
             text=request.POST.get('subtask')
         )
@@ -355,11 +363,11 @@ def update_task_ajax(request, project_id, ticket_id):
 
     data = json.loads(request.body)
     new_status = data.get("status")
-    
+
     valid_statuses = ['todo', 'in_progress', 'in_review', 'done']
     if new_status not in valid_statuses:
         return JsonResponse({
-            'success': False, 
+            'success': False,
             'error': 'Invalid status'
         }, status=400)
 
@@ -367,7 +375,7 @@ def update_task_ajax(request, project_id, ticket_id):
     ticket.save()
 
     return JsonResponse({
-        "success": True, 
+        "success": True,
         "status":  ticket.status,
         "status_display": ticket.get_status_display()
     })
@@ -376,7 +384,7 @@ def update_task_ajax(request, project_id, ticket_id):
 @project_access_required
 def ticket_detail(request,project_id, ticket_id, project):   # TODO decompose
     ticket = get_object_or_404(Ticket, id=ticket_id)
-    
+
     comments = ticket.comments.all()
     attachments = ticket.attachments.all()
     subtasks = ticket.subtasks.all()
@@ -414,9 +422,9 @@ def ticket_detail(request,project_id, ticket_id, project):   # TODO decompose
                 return redirect('ticket_detail', ticket_id=ticket.id)
         else:
             comment_form = CommentForm()
-        
-        if 'add_attachment' in request.POST:  # TODO process file extentions
-            attachment_form = AttachmentForm(request.POST, request.FILES)
+
+        if 'add_attachment' in request.POST:
+            attachment_form = SecureAttachmentForm(request.POST, request.FILES)
             if attachment_form.is_valid():
                 attachment = attachment_form.save(commit=False)
                 attachment.ticket = ticket
@@ -425,7 +433,7 @@ def ticket_detail(request,project_id, ticket_id, project):   # TODO decompose
                 messages.success(request, 'File attached!')
                 return redirect('ticket_detail', ticket_id=ticket.id)
         else:
-            attachment_form = AttachmentForm()
+            attachment_form = SecureAttachmentForm()
 
         if 'update_subtasks' in request.POST:
             formset = SubTaskFormSet(request.POST, queryset=subtasks)
@@ -442,14 +450,14 @@ def ticket_detail(request,project_id, ticket_id, project):   # TODO decompose
                 SubTask.objects.create(ticket=ticket, text=new_text)
                 messages.success(request, 'Subtask added!')
                 return redirect('ticket_detail', ticket_id=ticket.id)
-            
+
 
     else:
         comment_form = CommentForm()
-        attachment_form = AttachmentForm()
+        attachment_form = SecureAttachmentForm()
         formset = SubTaskFormSet(queryset=subtasks)
 
-    
+
     return render(request, 'tickets/ticket_detail.html', {
         'project':      project,
         'ticket':       ticket,
@@ -491,13 +499,13 @@ def update_ticket(request, ticket_id):
         if ticket_form.is_valid():
             ticket_form.save()
             messages.success(request, "Ticket is updated")
-            
+
             return redirect('ticket_detail', ticket_id=ticket.id)
-    
+
     else:
         form = TicketForm()
         form.fields['assigne'].queryset = ticket.project.members.all()
-    
+
     return render(request, 'tickets/ticket_form.html', {
         'form':   ticket_form,
         'ticket': ticket,

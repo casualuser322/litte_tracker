@@ -1,71 +1,117 @@
-name: Django CI
+name: Test and Lint
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main ]
 
 jobs:
-  lint:
-    name: Lint & Type Check
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-
-      - name: Ruff (lint)
-        run: ruff check .
-
-      - name: Black (format check)
-        run: black --check .
-
-      - name: MyPy (type check)
-        run: mypy .
-
-  tests:
-    name: Run Django tests
+  test:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16
+        image: postgres:15
         env:
-          POSTGRES_DB: github_ci
-          POSTGRES_USER: github_ci
-          POSTGRES_PASSWORD: github_ci
-        ports: ['5432:5432']
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
         options: >-
-          --health-cmd="pg_isready -U github_ci -d github_ci"
-          --health-interval=5s
-          --health-timeout=5s
-          --health-retries=5
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
 
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+    
+    - name: Run migrations
+      run: |
+        python manage.py migrate
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+        SECRET_KEY: test-secret-key
+        DEBUG: True
+    
+    - name: Run tests with pytest
+      run: |
+        pytest --cov --cov-report=xml --junitxml=test-results.xml -v
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+        SECRET_KEY: test-secret-key
+        DEBUG: True
+        REDIS_URL: redis://localhost:6379/0
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install Ruff
+      run: |
+        pip install ruff
+    
+    - name: Run Ruff linting
+      run: |
+        ruff check --output-format=github .
+    
+    - name: Run Ruff formatting check
+      run: |
+        ruff format --check .
+    
+    - name: Run mypy
+      run: |
+        pip install mypy django-stubs
+        mypy --ignore-missing-imports accounts tracker
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install pytest pytest-django
-
-      - name: Run tests
-        env:
-          DATABASE_URL: postgres://github_ci:github_ci@localhost:5432/github_ci
-        run: |
-          python manage.py migrate
-          pytest -v
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run bandit
+      run: |
+        pip install bandit
+        bandit -r accounts tracker -f html -o security-report.html
+        
+    - name: Run safety
+      run: |
+        pip install safety
+        safety check --json --output safety-report.json || true

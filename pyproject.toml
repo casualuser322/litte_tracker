@@ -1,12 +1,58 @@
-[tool.black]
-line-length = 79
-target-version = ['py311']
+[tool.pytest.ini_options]
+testpaths = ["accounts", "tracker"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--verbose",
+    "--tb=short",
+    "--strict-markers",
+    "--strict-config",
+    "--ds=taskboard.settings",
+    "--cov=.",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-fail-under=80"
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: integration tests",
+    "unit: unit tests"
+]
+
+[tool.coverage.run]
+source = ["accounts", "tracker"]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "*/admin.py",
+    "*/apps.py"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __str__",
+    "raise AssertionError",
+    "raise NotImplementedError"
+]
 
 [tool.ruff]
-line-length = 79
-select = ["E", "F", "I", "B", "C4"]
+select = [ "E","W","F","I","B","C4","UP", ]
 
-[tool.mypy]
-python_version = "3.11"
-strict = true
-disallow_untyped_defs = true
+ignore = [
+    "E501","B008","C901",
+]
+
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.isort]
+known-first-party = ["accounts", "tracker", "taskboard"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"

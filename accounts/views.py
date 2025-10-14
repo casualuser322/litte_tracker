@@ -1,19 +1,18 @@
-from django import forms
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import TicketsUser
+from tracker.models import Invitation
+
 from .forms import RegisterForm, SignInForm, UserUpdateForm
-from tracker.models import Invitation, TrackerGroup
+from .models import TicketsUser
 
 
 def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST, request.FILES)
         if form.is_valid():
-            user = form.save(commit=False)  
+            user = form.save(commit=False)
 
             if 'profile_image' in request.FILES:
                 user.profile_image = request.FILES['profile_image']
@@ -24,7 +23,7 @@ def register_view(request):
             print(form.errors)
     else:
         form = RegisterForm()
-    
+
     return render(request, 'accounts/register.html', {'form': form})
 
 def signin_view(request):   # TODO process validation ui
@@ -41,7 +40,7 @@ def signin_view(request):   # TODO process validation ui
                 form.add_error(None, "Invalid email or password.")
     else:
         form = SignInForm()
-    
+
     print(form.errors)
     return render(request, 'accounts/signin.html', {'form': form})
 
@@ -93,8 +92,8 @@ def accept_invitation(request, inv_id):
     user = request.user
     if request.method == 'POST':
         invitation = get_object_or_404(
-            Invitation, 
-            id=inv_id, 
+            Invitation,
+            id=inv_id,
             target_user=user
         )
         group = invitation.target_group
@@ -111,17 +110,16 @@ def decline_invitation(request, inv_id):
 
     if request.method == 'POST':
         invitation = get_object_or_404(
-            Invitation, 
-            id=inv_id, 
-            target_user=request.user
+            Invitation,
+            id=inv_id,
+            target_user=user
         )
         invitation.status = 'declined'
         invitation.save()
-    
+
     return redirect(request.META.get("HTTP_REFERER", "profile"))
 
 def user_view(request, pk):
-    user = request.user
     viewing_user = get_object_or_404(TicketsUser, id=pk)
 
     return render(request, "accounts/user_view.html", {
