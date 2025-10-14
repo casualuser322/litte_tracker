@@ -3,7 +3,14 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from model_bakery import baker
 
-from tracker.models import Attachment, Comment, Project, SubTask, Ticket, TrackerGroup
+from tracker.models import (
+    Attachment,
+    Comment,
+    Project,
+    SubTask,
+    Ticket,
+    TrackerGroup,
+)
 
 
 @pytest.mark.django_db

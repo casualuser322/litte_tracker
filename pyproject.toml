@@ -49,6 +49,5 @@ ignore = [
     "E501","B008","C901",
 ]
 
-line-length = 88
 target-version = "py311"
 
