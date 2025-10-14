@@ -101,7 +101,7 @@ jobs:
     - name: Run bandit
       run: |
         pip install bandit
-        bandit -r accounts tracker -f html -o security-report.html
+        bandit -r accounts tracker -f html -o security-report.html -x accounts/tests,tracker/tests
         
     - name: Run safety
       run: |
