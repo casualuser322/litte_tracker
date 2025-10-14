@@ -91,7 +91,7 @@ jobs:
       run: ruff check --output-format=github .
 
     - name: Run code formatting check
-      run: ruff check . --check
+      run: ruff check . -- --check
 
   security:
     runs-on: ubuntu-latest
