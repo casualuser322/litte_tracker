@@ -32,13 +32,15 @@ class TicketUserEngine(BaseUserManager):
 
 class TicketsUser(AbstractUser, PermissionsMixin):
     email = models.EmailField(unique=True)
-    username = models.CharField(max_length=150, unique=True)  # should be unique
+    username = models.CharField(
+        max_length=150, unique=True
+    )  # should be unique
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
 
     profile_image = models.ImageField(
-        upload_to='user_avatars/',
+        upload_to="user_avatars/",
         blank=True,
         null=True,
     )
@@ -48,8 +50,8 @@ class TicketsUser(AbstractUser, PermissionsMixin):
 
     objects = TicketUserEngine()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username", "first_name", "last_name"]
 
     def __str__(self):
         return self.email

@@ -12,7 +12,8 @@ class EmailBackend(ModelBackend):
         except TicketsUser.DoesNotExist:
             return None
 
+
 AUTHENTICATION_BACKENDS = [
-    'accounts.backends.EmailBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    "accounts.backends.EmailBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]

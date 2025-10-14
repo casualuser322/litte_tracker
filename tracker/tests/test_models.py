@@ -23,7 +23,7 @@ class TestTrackerModels:
             creator=user,
             assignee=user,
             status="open",
-            priority="high"
+            priority="high",
         )
 
         assert ticket.title == "Test Ticket"
@@ -37,7 +37,7 @@ class TestTrackerModels:
             title="Past Due Ticket",
             project=project,
             creator=user,
-            due_date=timezone.now() - timezone.timedelta(days=1)
+            due_date=timezone.now() - timezone.timedelta(days=1),
         )
 
         with pytest.raises(ValidationError):
@@ -45,10 +45,7 @@ class TestTrackerModels:
 
     def test_project_creation_with_group(self, user, group):
         project = baker.make(
-            Project,
-            title="Test Project",
-            owner=user,
-            attached_group=group
+            Project, title="Test Project", owner=user, attached_group=group
         )
 
         assert project.title == "Test Project"
@@ -57,10 +54,7 @@ class TestTrackerModels:
 
     def test_comment_creation(self, user, ticket):
         comment = baker.make(
-            Comment,
-            ticket=ticket,
-            author=user,
-            text="Test comment"
+            Comment, ticket=ticket, author=user, text="Test comment"
         )
 
         assert comment.text == "Test comment"
@@ -73,13 +67,11 @@ class TestTrackerModels:
         invalid_file = SimpleUploadedFile(
             "test.exe",
             b"file_content",
-            content_type="application/x-msdownload"
+            content_type="application/x-msdownload",
         )
 
         attachment = Attachment(
-            ticket=ticket,
-            attached_file=invalid_file,
-            uploaded_by=user
+            ticket=ticket, attached_file=invalid_file, uploaded_by=user
         )
 
         with pytest.raises(ValidationError):
@@ -99,6 +91,7 @@ class TestTrackerModels:
 @pytest.fixture
 def user(db):
     from accounts.models import TicketsUser
+
     return baker.make(TicketsUser, email="test@example.com")
 
 
@@ -109,7 +102,9 @@ def group(user):
 
 @pytest.fixture
 def project(user, group):
-    return baker.make(Project, title="Test Project", owner=user, attached_group=group)
+    return baker.make(
+        Project, title="Test Project", owner=user, attached_group=group
+    )
 
 
 @pytest.fixture
@@ -119,5 +114,5 @@ def ticket(user, project):
         title="Test Ticket",
         project=project,
         creator=user,
-        assignee=user
+        assignee=user,
     )
