@@ -1,13 +1,14 @@
 django
 djangorestframework
 django-extensions
+django_redis
+django-stubs
 gunicorn
 pillow
 python-dotenv
 psycopg2-binary
 black
 ruff
-mypy
 pytest
 pytest-django
 pytest-cov
@@ -15,9 +16,6 @@ model_bakery
 factory-boy
 freezegun
 coverage
-flake8
-isort
-django-stubs
 bandit
 safety
 pre-commit
