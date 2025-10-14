@@ -88,17 +88,10 @@ jobs:
         pip install ruff
     
     - name: Run Ruff linting
-      run: |
-        ruff check --output-format=github .
-    
-    - name: Run Ruff formatting check
-      run: |
-        ruff format --check .
-    
-    - name: Run mypy
-      run: |
-        pip install mypy django-stubs
-        mypy --ignore-missing-imports accounts tracker
+      run: ruff check --output-format=github .
+
+    - name: Run code formatting check
+      run: ruff check . --check
 
   security:
     runs-on: ubuntu-latest

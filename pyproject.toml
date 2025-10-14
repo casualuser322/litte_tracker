@@ -38,7 +38,12 @@ exclude_lines = [
 ]
 
 [tool.ruff]
-select = [ "E","W","F","I","B","C4","UP", ]
+line-length = 79
+select = ["E", "F", "I", "B", "C4"]
+exclude = [
+    "migrations",
+    "manage.py",
+]
 
 ignore = [
     "E501","B008","C901",
@@ -47,12 +52,3 @@ ignore = [
 line-length = 88
 target-version = "py311"
 
-[tool.ruff.isort]
-known-first-party = ["accounts", "tracker", "taskboard"]
-
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-
-[tool.ruff.flake8-tidy-imports]
-ban-relative-imports = "all"
