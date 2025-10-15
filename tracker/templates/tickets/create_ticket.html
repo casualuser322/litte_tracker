@@ -49,7 +49,7 @@
 
         <div class="mb-3">
             <label for="assignee">Assign to:</label>
-            <select class="form-control" name="assigne" id="assignee">
+            <select class="form-control" name="assignee" id="assignee">
                 <option value="">Empty</option>
                 {% for member in project.members.all %}
                     <option value="{{ member.id }}">{{ member.email }}</option>

@@ -301,7 +301,7 @@ def project_details(request, project_id, project=None):
 @login_required
 def ticket_list(request):
     user = request.user
-    user_tickets = Ticket.objects.filter(assigne=user.id)
+    user_tickets = Ticket.objects.filter(assignee=user.id)
 
     return render(
         request, "tickets/ticket_list.html", {"user_tickets": user_tickets}
@@ -507,7 +507,7 @@ def update_ticket(request, ticket_id):
 
     else:
         form = TicketForm()
-        form.fields["assigne"].queryset = ticket.project.members.all()
+        form.fields["assignee"].queryset = ticket.project.members.all()
 
     return render(
         request,

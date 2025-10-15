@@ -16,15 +16,15 @@ from tracker.models import (
 @pytest.mark.django_db
 class TestTrackerModels:
     def test_ticket_creation(self, user, project):
-        ticket = baker.make(
-            Ticket,
-            title="Test Ticket",
-            project=project,
-            creator=user,
-            assignee=user,
-            status="open",
-            priority="high",
-        )
+        baker.make(
+        Ticket,
+        title="Test Ticket",
+        project=project,
+        creator=user,
+        status="open",
+        priority="high",
+    )
+
 
         assert ticket.title == "Test Ticket"
         assert ticket.status == "open"

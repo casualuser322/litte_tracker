@@ -96,7 +96,7 @@ class Ticket(models.Model):
         on_delete=models.CASCADE,
         related_name="created_tickets",
     )
-    assigne = models.ForeignKey(
+    assignee = models.ForeignKey(
         "accounts.TicketsUser",
         on_delete=models.SET_NULL,
         null=True,
