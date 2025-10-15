@@ -1,15 +1,32 @@
 import pytest
+from model_bakery import baker
 
-
-@pytest.fixture(autouse=True)
-def enable_db_access_for_all_tests(db):
-    """Включает доступ к БД для всех тестов"""
-    pass
+from accounts.models import TicketsUser
+from tracker.models import Project, TrackerGroup, Ticket
 
 
 @pytest.fixture
-def client():
-    """Фикстура Django test client"""
-    from django.test import Client
+def user(db):
+    return baker.make(TicketsUser, email="test@example.com")
 
-    return Client()
+
+@pytest.fixture
+def group(user):
+    return baker.make(TrackerGroup, title="Test Group", owner=user)
+
+
+@pytest.fixture
+def project(user, group):
+    return baker.make(Project, title="Test Project", owner=user, attached_group=group)
+
+
+@pytest.fixture
+def ticket(user, project):
+    return baker.make(
+        Ticket,
+        title="Test Ticket",
+        project=project,
+        creator=user,
+        assignee=user,
+    )
+
