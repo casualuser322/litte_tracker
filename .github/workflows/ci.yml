@@ -52,7 +52,11 @@ jobs:
       run: |
         python manage.py migrate
       env:
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+        DB_NAME: test_db
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_HOST: localhost
+        DB_PORT: 5432
         SECRET_KEY: test-secret-key
         DEBUG: True
     
@@ -60,7 +64,11 @@ jobs:
       run: |
         pytest --cov --cov-report=xml --junitxml=test-results.xml -v
       env:
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+        DB_NAME: test_db
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_HOST: localhost
+        DB_PORT: 5432
         SECRET_KEY: test-secret-key
         DEBUG: True
         REDIS_URL: redis://localhost:6379/0

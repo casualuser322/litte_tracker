@@ -84,4 +84,6 @@ build/
 dist/
 
 staticfiles
+static
 security-report.html
+ssl
