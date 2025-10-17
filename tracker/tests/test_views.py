@@ -297,7 +297,7 @@ class TestTrackerView:
             json.dumps(data),
             content_type="application/json",
         )
-        
+
         assert response.status_code == 400
 
     def test_send_invitation_as_owner(self, client):
@@ -379,6 +379,6 @@ class TestInvitationViews:
 
         assert response.status_code == 302
         invitation.refresh_from_db()
-        
+
         assert invitation.invitation_status == "accepted"
         assert self.user in self.group.members.all()

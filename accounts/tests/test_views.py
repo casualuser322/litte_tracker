@@ -208,7 +208,7 @@ class TestAccountsViews:
         response = client.post(
             reverse("accept_invitation", args=[invitation.id])
         )
-        
+
         assert response.status_code == 302
 
         assert user_with_password in group.members.all()
