@@ -23,9 +23,11 @@ It allows you to create projects, manage tasks, assign users, and visualize prog
 
 ## Tech Stack
 - **Backend:** Django, Django REST Framework  
-- **Frontend:** Bootstrap, JavaScript  
+- **Frontend:** Bootstrap, JavaScript, JQuery, AJAX
 - **Database:** PostgreSQL  
-- **Containerization:** Docker, Docker Compose  
+- **Web server:** Nginx
+- **Cache:** Redis
+- **Containerization:** Docker, Docker Compose 
 - **CI/CD:** GitHub Actions  
 - **Testing:** pytest  
 
@@ -58,13 +60,13 @@ python manage.py runserver
 
 ## Project Structure
 ```
-accounts/       # User authentication, profiles, signals
-    templates/  # Register, login, reset password, profile
-    static/     # CSS, JS for accounts
-taskboard/      # Django project settings, URLs, WSGI/ASGI
-tracker/        # Core app: projects, groups, tickets, Kanban
-    templates/  # Groups, projects, tickets, base templates
-    static/     # CSS, JS, images for tracker
+accounts/       
+    templates/  
+    static/     
+taskboard/      
+tracker/        
+    templates/  
+    static/     
 requirements.txt
 manage.py
 docker/         
