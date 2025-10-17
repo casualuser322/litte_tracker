@@ -1,4 +1,4 @@
-# 📝 Project Tracker
+# Project Tracker
 
 A lightweight task tracker inspired by Jira and Yandex Tracker.  
 It allows you to create projects, manage tasks, assign users, and visualize progress with a Kanban board.  
@@ -6,12 +6,11 @@ It allows you to create projects, manage tasks, assign users, and visualize prog
 [![Python](https://img.shields.io/badge/python-3.11-blue?logo=python)](https://www.python.org/)  
 [![Django](https://img.shields.io/badge/Django-4.2-green?logo=django)](https://www.djangoproject.com/)  
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?logo=postgresql)](https://www.postgresql.org/)  
-[![Docker](https://img.shields.io/badge/Docker-✔-blue?logo=docker)](https://www.docker.com/)  
-[![CI/CD](https://img.shields.io/badge/GitHub_Actions-CI%2FCD-black?logo=githubactions)](https://github.com/features/actions)  
+[![Docker](https://img.shields.io/badge/Docker-✔-blue?logo=docker)](https://www.docker.com/)    
 
 ---
 
-## 🚀 Features
+## Features
 - Create and manage projects  
 - Task creation with statuses and priorities  
 - Kanban board for visual workflow management  
@@ -22,7 +21,7 @@ It allows you to create projects, manage tasks, assign users, and visualize prog
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 - **Backend:** Django, Django REST Framework  
 - **Frontend:** Bootstrap, JavaScript  
 - **Database:** PostgreSQL  
@@ -32,7 +31,7 @@ It allows you to create projects, manage tasks, assign users, and visualize prog
 
 ---
 
-## ⚙️ Installation & Run
+## Installation & Run
 
 ### Requirements
 - Docker & Docker Compose  

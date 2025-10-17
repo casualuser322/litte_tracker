@@ -5,16 +5,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tracker', '0003_trackergroup_group_logo'),
+        ("tracker", "0003_trackergroup_group_logo"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='invitation',
-            name='target_group',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='invites', to='tracker.trackergroup'),
+            model_name="invitation",
+            name="target_group",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="invites",
+                to="tracker.trackergroup",
+            ),
             preserve_default=False,
         ),
     ]

@@ -13,7 +13,7 @@
             </div>
 
             <div class="mb-3">
-                <select name="assigne" value="{{ ticket.assigne }}" class="form-select">
+                <select name="assignee" value="{{ ticket.assignee }}" class="form-select">
                     <option value="{{ ticket.owner }}">Assign to..</option>
                     {% for mem in project.members.all %}
                     <option value="{{ mem.id }}">{{ mem.username }}</option>

@@ -12,7 +12,7 @@ class TestUserModel:
             TicketsUser,
             email="test@example.com",
             first_name="John",
-            last_name="Doe"
+            last_name="Doe",
         )
 
         assert user.email == "test@example.com"
@@ -22,8 +22,7 @@ class TestUserModel:
 
     def test_user_manager_create_user(self):
         user = TicketsUser.objects.create_user(
-            email="user@example.com",
-            password="testpass123"
+            email="user@example.com", password="testpass123"
         )
 
         assert user.email == "user@example.com"
@@ -33,8 +32,7 @@ class TestUserModel:
 
     def test_user_manager_create_superuser(self):
         superuser = TicketsUser.objects.create_superuser(
-            email="admin@example.com",
-            password="adminpass123"
+            email="admin@example.com", password="adminpass123"
         )
 
         assert superuser.email == "admin@example.com"
@@ -43,12 +41,10 @@ class TestUserModel:
 
     def test_user_unique_email(self, db):
         TicketsUser.objects.create_user(
-            email="duplicate@example.com",
-            password="testpass123"
+            email="duplicate@example.com", password="testpass123"
         )
 
         with pytest.raises(IntegrityError):
             TicketsUser.objects.create_user(
-                email="duplicate@example.com",
-                password="password123"
+                email="duplicate@example.com", password="password123"
             )
