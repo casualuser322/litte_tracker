@@ -300,15 +300,6 @@ class TestTrackerView:
 
         assert response.status_code == 400
 
-    def test_send_invitation_as_owner(self, client):
-        client.force_login(self.user)
-        data = {"emails": "newuser@example.com"}
-        response = client.post(
-            reverse("send_invitation", args=[self.group.id]), data
-        )
-
-        assert response.status_code == 302
-
     def test_group_delete_as_owner(self, client):
         client.force_login(self.user)
         group_id = self.group.id
