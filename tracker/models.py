@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
@@ -7,17 +8,15 @@ class TrackerGroup(models.Model):
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     owner = models.ForeignKey(
-        'accounts.TicketsUser',
+        "accounts.TicketsUser",
         on_delete=models.CASCADE,
         related_name="owned_groups",
     )
     members = models.ManyToManyField(
-        'accounts.TicketsUser',
-        related_name="attached_groups",
-        blank=True
+        "accounts.TicketsUser", related_name="attached_groups", blank=True
     )
     group_logo = models.ImageField(
-        upload_to='group_avatars/',
+        upload_to="group_avatars/",
         blank=True,
         null=True,
     )
@@ -25,12 +24,13 @@ class TrackerGroup(models.Model):
     def __str__(self):
         return self.title
 
+
 class Project(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     owner = models.ForeignKey(
-        'accounts.TicketsUser',
+        "accounts.TicketsUser",
         on_delete=models.CASCADE,
         related_name="owned_projects",
     )
@@ -42,52 +42,47 @@ class Project(models.Model):
         related_name="projects",
     )
     members = models.ManyToManyField(
-        'accounts.TicketsUser',
-        related_name='projects',
+        "accounts.TicketsUser",
+        related_name="projects",
         blank=True,
     )
 
     def __str__(self):
         return self.title
 
+
 class Ticket(models.Model):
     STATUS_CHOICES = [
-        ('open', 'Open'),
-        ('in_progress', 'In progress'),
-        ('testing', 'Testing'),
-        ('done', 'Done'),
-        ('closed', 'Closed')
+        ("open", "Open"),
+        ("in_progress", "In progress"),
+        ("testing", "Testing"),
+        ("done", "Done"),
+        ("closed", "Closed"),
     ]
 
     PRIORITY_CHOICES = [
-        ('low', 'Low'),
-        ('medium', 'Medium'),
-        ('high', 'High'),
-        ('critical', 'Critical')
+        ("low", "Low"),
+        ("medium", "Medium"),
+        ("high", "High"),
+        ("critical", "Critical"),
     ]
 
     TYPE_CHOICES = [
-        ('task', 'Task'),
-        ('bug', 'Bug'),
-        ('feature', 'Feature'),
+        ("task", "Task"),
+        ("bug", "Bug"),
+        ("feature", "Feature"),
     ]
 
     title = models.CharField(max_length=200)
     description = models.TextField(blank=None)
     status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default="open"
+        max_length=20, choices=STATUS_CHOICES, default="open"
     )
     priority = models.CharField(
-        max_length=20,
-        choices=PRIORITY_CHOICES,
-        default="low"
+        max_length=20, choices=PRIORITY_CHOICES, default="low"
     )
     ticket_type = models.CharField(
-        max_length=20,
-        choices=TYPE_CHOICES,
-        default="task"
+        max_length=20, choices=TYPE_CHOICES, default="task"
     )
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
@@ -95,30 +90,28 @@ class Ticket(models.Model):
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
-        related_name='tickets',
+        related_name="tickets",
     )
     creator = models.ForeignKey(
-        'accounts.TicketsUser',
+        "accounts.TicketsUser",
         on_delete=models.CASCADE,
-        related_name='created_tickets',
+        related_name="created_tickets",
     )
-    assigne = models.ForeignKey(
-        'accounts.TicketsUser',
+    assignee = models.ForeignKey(
+        "accounts.TicketsUser",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='assigned_tickets',
+        related_name="assigned_tickets",
     )
 
-
     def __str__(self):
-        return f'{self.title} ({self.get_status_display()})'
+        return f"{self.title} ({self.get_status_display()})"
+
 
 class SubTask(models.Model):
     ticket = models.ForeignKey(
-        Ticket,
-        on_delete=models.CASCADE,
-        related_name="subtasks"
+        Ticket, on_delete=models.CASCADE, related_name="subtasks"
     )
     text = models.CharField(max_length=255)
     is_done = models.BooleanField(default=False)
@@ -126,14 +119,15 @@ class SubTask(models.Model):
     def __str__(self):
         return f"{self.text} ({'done' if self.is_done else 'pending'})"
 
+
 class Comment(models.Model):
     ticket = models.ForeignKey(
         Ticket,
         on_delete=models.CASCADE,
-        related_name='comments',
+        related_name="comments",
     )
     author = models.ForeignKey(
-        'accounts.TicketsUser',
+        "accounts.TicketsUser",
         on_delete=models.CASCADE,
     )
     text = models.TextField(blank=False)
@@ -142,15 +136,16 @@ class Comment(models.Model):
     def __str__(self):
         return f"Comment from {self.author}, to {self.ticket.title}, at {self.created_at}"
 
+
 class Attachment(models.Model):
     ticket = models.ForeignKey(
         Ticket,
         on_delete=models.CASCADE,
-        related_name='attachments',
+        related_name="attachments",
     )
-    attached_file = models.FileField(upload_to='ticket_attachments')
+    attached_file = models.FileField(upload_to="ticket_attachments")
     uploaded_by = models.ForeignKey(
-        'accounts.TicketsUser',
+        "accounts.TicketsUser",
         on_delete=models.CASCADE,
     )
     uploaded_at = models.DateTimeField(default=timezone.now)
@@ -158,40 +153,57 @@ class Attachment(models.Model):
     def __str__(self):
         return f"Attachment to {self.ticket.title}"
 
+    def clean(self):
+        super().clean()
+        if self.attached_file:
+            if self.attached_file.size > 10 * 1024 * 1024:
+                raise ValidationError("File size must be under 10MB")
+
+            allowed_extensions = [
+                "pdf",
+                "doc",
+                "docx",
+                "jpg",
+                "jpeg",
+                "png",
+                "txt",
+            ]
+            ext = self.attached_file.name.split(".")[-1].lower()
+            if ext not in allowed_extensions:
+                raise ValidationError(
+                    f"File type not allowed. Allowed: {', '.join(allowed_extensions)}"
+                )
+
+
 class Invitation(models.Model):
     INVITATION_STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('accepted', 'Accepted'),
-        ('declined', 'Declined'),
+        ("pending", "Pending"),
+        ("accepted", "Accepted"),
+        ("declined", "Declined"),
     ]
     INVITATION_TYPES_CHOICES = [
-        ('group', 'Group'),
-        ('project', 'Project'),
+        ("group", "Group"),
+        ("project", "Project"),
     ]
 
     owner = models.ForeignKey(
-        'accounts.TicketsUser',
+        "accounts.TicketsUser",
         on_delete=models.CASCADE,
         related_name="invitation_owner",
     )
     target_user = models.ForeignKey(
-        'accounts.TicketsUser',
+        "accounts.TicketsUser",
         on_delete=models.CASCADE,
         related_name="target_user",
     )
     target_group = models.ForeignKey(
-        TrackerGroup,
-        on_delete=models.CASCADE,
-        related_name="invites"
+        TrackerGroup, on_delete=models.CASCADE, related_name="invites"
     )
     invitation_type = models.CharField(
         max_length=20,
         choices=INVITATION_TYPES_CHOICES,
     )
     invitation_status = models.CharField(
-        max_length=20,
-        choices=INVITATION_STATUS_CHOICES,
-        default="pending"
+        max_length=20, choices=INVITATION_STATUS_CHOICES, default="pending"
     )
     created_at = models.DateTimeField(default=timezone.now)
-
