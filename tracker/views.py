@@ -173,16 +173,13 @@ def send_invitation(request, group_id, group=None):
     if emails:
         if group.owner.id == current_user.id:
             for email in [e.strip() for e in emails.split(",") if e.strip()]:
-                try:
-                    user = TicketsUser.objects.get(email=email)
-                    Invitation.objects.create(
-                        owner=current_user,
-                        target_user=user,
-                        target_group=group,
-                        invitation_type="group",
-                    )
-                except TicketsUser.DoesNotExist:
-                    pass  # TODO
+                user = get_object_or_404(TicketsUser, email=email)
+                Invitation.objects.create(
+                    owner=current_user,
+                    target_user=user,
+                    target_group=group,
+                    invitation_type="group",
+                )
         else:
             messages.error(
                 request, "You don't have permission to send invitation"
