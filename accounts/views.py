@@ -27,7 +27,7 @@ def register_view(request):
     return render(request, "accounts/register.html", {"form": form})
 
 
-def signin_view(request):  # TODO process validation ui
+def signin_view(request):
     if request.method == "POST":
         form = SignInForm(request.POST)
         if form.is_valid():
