@@ -91,6 +91,5 @@ POST /api/tasks/
 - [ ] Fix project edditing
 - [ ] Fix "Race condition" for ticket edditing
 - [ ] Add backlog 
-- [ ] Add django-redis
 - [ ] Handling Ajax errors with toast-notifications
 - [ ] Make loading indicators 
