@@ -441,28 +441,26 @@ def add_subtask(request, ticket_id):
 @require_POST
 @login_required
 @project_access_required
-def update_task_ajax(request, project_id, ticket_id, pk, project=None):
+def update_task_ajax(request, project_id, ticket_id, project=None):
     ticket = get_object_or_404(Ticket, id=ticket_id, project_id=project_id)
-
+    
     data = json.loads(request.body)
     new_status = data.get("status")
-
+    
     valid_statuses = ["todo", "in_progress", "in_review", "done"]
     if new_status not in valid_statuses:
         return JsonResponse(
             {"success": False, "error": "Invalid status"}, status=400
         )
-
+    
     ticket.status = new_status
     ticket.save()
-
-    return JsonResponse(
-        {
-            "success": True,
-            "status": ticket.status,
-            "status_display": ticket.get_status_display(),
-        }
-    )
+    
+    return JsonResponse({
+        "success": True,
+        "status": ticket.status,
+        "status_display": ticket.get_status_display(),
+    })
 
 
 @login_required
@@ -592,7 +590,8 @@ def create_ticket(request, project_id, project):
 
 
 @login_required
-def update_ticket(request, ticket_id):
+@project_access_required
+def update_ticket(request, project_id, ticket_id, project=None):
     ticket = get_object_or_404(Ticket, id=ticket_id)
 
     if request.method == "POST":
