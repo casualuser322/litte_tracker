@@ -13,6 +13,11 @@ urlpatterns = [
         name="group_delete",
     ),
     path(
+        "groups/<int:group_id>/edit",
+        view=views.edit_group,
+        name="edit_group",
+    ),
+    path(
         "groups/delete_member/<int:group_id>/<int:pk>",
         view=views.delete_group_member,
         name="delete_member",
@@ -29,7 +34,12 @@ urlpatterns = [
     ),
     path("projects/", view=views.project_list, name="project_list"),
     path(
-        "projects/delete/<int:project_id>",
+        "projects/edit/<int:project_id>",
+        views.edit_project,
+        name="edit_project",
+    ),
+    path(
+        "projects/delete/<int:group_id>/<int:project_id>",
         views.delete_project,
         name="delete_project",
     ),
@@ -55,19 +65,19 @@ urlpatterns = [
         name="ticket_detail",
     ),
     path(
-        "tickets/<int:ticket_id>/update",
+        "tickets/update/<int:project_id>/<int:ticket_id>/",
         view=views.update_ticket,
         name="update_ticket",
-    ),
-    path(
-        "tickets/<int:ticket_id>/update_status/<int:project_id>/<int:pk>/",
-        views.update_task_ajax,
-        name="update_task_ajax",
     ),
     path(
         "tickets/<int:ticket_id>/add_subtask/",
         view=views.add_subtask,
         name="add_subtask",
+    ),
+    path(
+        "tickets/<int:project_id>/<int:ticket_id>/update_status/<int:task_id>/",
+        views.update_task_ajax,
+        name="update_task_ajax",
     ),
     path(
         "tickets/update_task_status/<int:project_id>",

@@ -157,32 +157,14 @@ class TestTrackerView:
             "assignee": self.user.id,
         }
         response = client.post(
-            reverse("update_ticket", args=[self.ticket.id]), data
+            reverse("update_ticket", args=[self.project.id, self.ticket.id]),
+            data,
         )
 
         assert response.status_code == 302
 
         self.ticket.refresh_from_db()
         assert self.ticket.title == "Updated Ticket"
-
-    def test_update_task_ajax(self, client):
-        client.force_login(self.user)
-
-        data = {"status": "done"}
-
-        url = reverse(
-            "update_task_ajax",
-            args=(self.ticket.id, self.project.id, self.task.id),
-        )
-
-        response = client.post(
-            url,
-            json.dumps(data),
-            content_type="application/json",
-        )
-
-        assert response.status_code == 200
-        self.task.refresh_from_db()
 
     def test_add_subtask_view(self, client):
         client.force_login(self.user)

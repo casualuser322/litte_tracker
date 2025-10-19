@@ -22,11 +22,11 @@
     <div class="md-0" style="margin-top: 40px;">
         {% if user_tickets %}
             {% for ticket in user_tickets %}
-                {% include 'tickets/ticket_list_card.html' %}
+                {% include 'tickets/ticket_list_card.html' with ticket=ticket %}
             {% endfor %}
+        {% else %}
+            <p class="text-center">No tasks assigned to you.</p>
         {% endif %}
-
-        {}
     </div>
 </div>
 {% endblock %}

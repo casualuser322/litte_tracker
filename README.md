@@ -88,8 +88,8 @@ POST /api/tasks/
 ---
 
 ## TODO
-- [ ] Fix project edditing
-- [ ] Fix "Race condition" for ticket edditing
+- [ ] Replace id with uuid
 - [ ] Add backlog 
 - [ ] Handling Ajax errors with toast-notifications
 - [ ] Make loading indicators 
+- [ ] Decompose tracker module

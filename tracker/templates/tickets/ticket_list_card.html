@@ -1,0 +1,14 @@
+{% load static %}
+<div class="group-card-wrapper bg-white d-flex align-items-center justify-content-between border rounded p-2 mb-2">
+    <a href="{% url 'ticket_detail' project_id=ticket.project.id ticket_id=ticket.id %}" class="d-flex align-items-center text-decoration-none flex-grow-1">
+        <img src="{% static 'tracker/img/group.png' %}" class="member-photo me-2"
+             style="width:40px; height:40px; object-fit:cover; border-radius:50%;">
+        <div>
+            <div class="fw-bold">{{ ticket.title }}</div>
+            <small class="text-muted">
+                Project: {{ ticket.project.title }} | 
+                Status: {{ ticket.get_status_display }}
+            </small>
+        </div>
+    </a>
+</div>

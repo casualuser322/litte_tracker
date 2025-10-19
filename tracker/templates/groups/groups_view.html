@@ -9,7 +9,10 @@
 
 {% block content %}
 <div class="container my-5">
-    <h2 class="text-center mb-5">{{ group.title }}</h2>
+    <div class="text-center mb-5">
+        <h3>{{ group.title }} </h3>
+        <a href="{% url 'edit_group' group.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+    </div>
 
     <h4 class="mb-4">Projects</h4>
     <div class="row row-cols-1 row-cols-md-4 g-4">
@@ -25,8 +28,8 @@
                     <p class="text-muted">{{ project.members.count }} members</p>
 
                     <div class="mt-auto d-flex justify-content-around" style="pointer-events: auto; z-index: 2;">
-                        <a href="#" class="btn btn-sm btn-outline-warning">Edit</a>
-                        <a href="{% url 'delete_project' project.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                        <a href="{% url 'edit_project' project.id %}" class="btn btn-sm btn-outline-warning">Edit</a>
+                        <a href="{% url 'delete_project' group.id project.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
                     </div>
                 </div>
             </div>
