@@ -441,7 +441,7 @@ def add_subtask(request, ticket_id):
 @require_POST
 @login_required
 @project_access_required
-def update_task_ajax(request, project_id, ticket_id, project=None):
+def update_task_ajax(request, project_id, ticket_id, task_id, project=None):
     ticket = get_object_or_404(Ticket, id=ticket_id, project_id=project_id)
 
     data = json.loads(request.body)
@@ -590,7 +590,6 @@ def create_ticket(request, project_id, project):
         },
     )
 
-
 @login_required
 @project_access_required
 def update_ticket(request, project_id, ticket_id, project=None):
@@ -620,7 +619,6 @@ def update_ticket(request, project_id, ticket_id, project=None):
             "ticket": ticket,
         },
     )
-
 
 def index(request):
     user = request.user

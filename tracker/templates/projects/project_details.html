@@ -24,7 +24,7 @@
                     {% if tickets %}
                         {% for task in tickets %}
                             {% if task.status == status.key %}
-                                <a href="{% url 'ticket_detail' project.id task.id %}" class="kanban-card" draggable="true" data-task-id="{{ task.id }}">
+                                <a href="{% url 'ticket_detail' project_id=ticket.project.id ticket_id=ticket.id %}" class="kanban-card" draggable="true" data-task-id="{{ task.id }}">
                                     <div class="fw-bold">{{ task.title }}</div>
                                     <div class="text-truncate">{{ task.description|truncatewords:15 }}</div>
                                     <div class="mt-2 d-flex justify-content-between align-items-center">
