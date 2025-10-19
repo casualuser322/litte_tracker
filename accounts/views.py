@@ -20,7 +20,6 @@ def register_view(request):
             return redirect("signin")
         else:
             form.add_error(None, "Passwords do not match")
-            print(form.errors)
     else:
         form = RegisterForm()
 
@@ -42,7 +41,6 @@ def signin_view(request):
     else:
         form = SignInForm()
 
-    print(form.errors)
     return render(request, "accounts/signin.html", {"form": form})
 
 
@@ -75,8 +73,6 @@ def profile_view(request):
         all_groups = {
             inv.owner: inv.target_group.title for inv in all_invitations
         }
-
-        print(all_groups)
 
         return render(
             request,

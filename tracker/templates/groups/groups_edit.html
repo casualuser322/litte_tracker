@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Create Group{% endblock %}
+{% block title %}{{ group.title }}{% endblock %}
 
 {% block extra_styles %}
 <link rel="stylesheet" href="{% static 'tracker/css/groups.css' %}">
@@ -9,32 +9,19 @@
 
 {% block content %}
 <div class="container my-5 group-create-container">
-    <h3 class="mb-4 text-center">Create a Group</h3>
+    <h3 class="mb-4 text-center">Edit {{ group.title }}</h3>
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
         <div class="mb-3">
             <input type="text" class="form-control" name="title" 
-                placeholder="Enter the name of the group..">
+                value="{{ group.title }}">
         </div>
 
         <div class="mb-3">
-            <textarea class="form-control" rows="4" name="description" 
-                placeholder="Write group's description here.."></textarea>
+            <textarea class="form-control" name="description">{{ group.description }}</textarea>
         </div>
-
-        <div class="mb-3 position-relative">
-            <input type="text" class="form-control" id="emailInput" 
-                placeholder="Add your co-workers' email..."
-                data-autocomplete-url="{% url 'user_email_autocomplete' %}">
-            <ul class="list-group position-absolute w-100" id="suggestionsBox" 
-                style="z-index:1000; display:none;"></ul>
-        </div>
-        <div id="selectedEmails" class="d-flex flex-wrap gap-2 mb-3"></div>
-        <input type="hidden" name="emails" id="emailsHidden">
-
-        <script src="{% static 'tracker/js/email_check.js' %}"></script>
 
         <div class="mb-3">
             <label for="groupLogo" class="form-label">Group Logo</label>
@@ -55,7 +42,7 @@
         {% endif %}
 
         <div class="text-end">
-            <button type="submit" class="btn btn-primary">Create Group</button>
+            <button type="submit" class="btn btn-primary">Update</button>
         </div>
     </form>
 </div>

@@ -3,8 +3,9 @@ import json
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.forms import modelformset_factory
-from django.http import JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -116,9 +117,44 @@ def group_view(request, group_id, group=None):
 
 @login_required
 @group_access_required
+def edit_group(request, group_id, group=None):
+    user = request.user
+
+    if user.id != group.owner.id:
+        return HttpResponseForbidden(
+            "You do not have permission to edit this group"
+        )
+
+    if request.method == "POST":
+        form = GroupForm(request.POST, request.FILES, instance=group)
+        if form.is_valid():
+            with transaction.atomic():
+                prtctd_group = TrackerGroup.objects.select_for_update().get(
+                    id=group_id
+                )
+
+                prtctd_group.title = form.cleaned_data.get("title")
+                prtctd_group.description = form.cleaned_data.get("description")
+                prtctd_group.save()
+
+            return redirect("group_detail", group_id=prtctd_group.id)
+    else:
+        form = GroupForm(instance=group)
+
+    return render(
+        request,
+        "groups/groups_edit.html",
+        {
+            "form": form,
+            "group": group,
+        },
+    )
+
+
+@login_required
+@group_access_required
 def delete_group_member(request, group_id, pk, group=None):
     user = request.user
-    group = get_object_or_404(TrackerGroup, id=group_id)
 
     if user.id == group.owner.id and pk in group.attached_groups.all():
         group.members.remove(pk)
@@ -140,19 +176,65 @@ def leave_group_member(request, group_id):
     else:
         messages.error(request, "Group owners cannot leave their own group.")
 
-    return redirect(request.META.get("HTTP_REFERER", reverse("group_list")))
+    return redirect(
+        request.META.get(
+            "HTTP_REFERER", reverse("group_list", args=[group_id])
+        )
+    )
+
+
+@login_required
+@project_access_required
+def edit_project(request, project_id, project=None):
+    user = request.user
+
+    if user.id != project.owner.id:
+        return HttpResponseForbidden(
+            "You do not have permission to edit this project"
+        )
+
+    if request.method == "POST":
+        form = ProjectForm(request.POST, request.FILES, instance=project)
+        if form.is_valid():
+            with transaction.atomic():
+                prtctd_project = Project.objects.select_for_update().get(
+                    id=project_id
+                )
+
+                prtctd_project.title = form.cleaned_data.get("title")
+                prtctd_project.description = form.cleaned_data.get(
+                    "description"
+                )
+                prtctd_project.save()
+
+            return redirect("project_details", project_id=prtctd_project.id)
+    else:
+        form = GroupForm(instance=project)
+
+    return render(
+        request,
+        "projects/project_edit.html",
+        {
+            "form": form,
+            "project": project,
+        },
+    )
 
 
 @login_required
 @group_access_required
-def delete_project(request, project_id):
+def delete_project(request, group_id, project_id, group=None):
     user = request.user
     project = get_object_or_404(Project, id=project_id)
 
     if user.id == project.owner.id:
         project.delete()
 
-    return redirect(request.META.get("HTTP_REFERER", reverse("group_view")))
+    return redirect(
+        request.META.get(
+            "HTTP_REFERER", reverse("group_view", args=[group_id])
+        )
+    )
 
 
 @login_required
@@ -204,7 +286,11 @@ def group_delete(request, group_id, pk, group=None):
                 request, "You do not have permission to delete this group."
             )
 
-    return redirect("group_list")
+    return redirect(
+        request.META.get(
+            "HTTP_REFERER", reverse("group_view", args=[group_id])
+        )
+    )
 
 
 @login_required
@@ -238,16 +324,18 @@ def create_project(request, group_id, group=None):
             project.save()
             project.members.add(user)
 
-            for email in emails:
-                email = email.strip()
-                if not email:
-                    continue
-                coworker = TicketsUser.objects.filter(email=email).first()
-                if coworker:
-                    project.members.add(coworker)
-
+            if emails:
+                for email in emails:
+                    email = email.strip()
+                    coworker = TicketsUser.objects.filter(email=email).first()
+                    if coworker:
+                        project.members.add(coworker)
             messages.success(request, "Project is created!")
-            return redirect("project_list")
+            return redirect(
+                request.META.get(
+                    "HTTP_REFERER", reverse("group_view", args=[group_id])
+                )
+            )
     else:
         form = ProjectForm()
 
@@ -379,7 +467,7 @@ def update_task_ajax(request, project_id, ticket_id, pk, project=None):
 
 @login_required
 @project_access_required
-def ticket_detail(request, project_id, ticket_id, project):
+def ticket_detail(request, project_id, ticket_id, project):  # TODO Decopose
     ticket = get_object_or_404(Ticket, id=ticket_id)
 
     comments = ticket.comments.all()

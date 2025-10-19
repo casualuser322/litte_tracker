@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ project.title }}{% endblock %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="{% static 'tracker/css/groups.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5 group-create-container">
+    <h3 class="mb-4 text-center">Edit {{ project.title }}</h3>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <input type="text" class="form-control" name="title" 
+                value="{{ project.title }}">
+        </div>
+
+        <div class="mb-3">
+            <textarea class="form-control" name="description">{{ project.description }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="groupLogo" class="form-label">Project Logo</label>
+            <div class="upload-box p-4 text-center border rounded" style="cursor:pointer;"
+                 onclick="document.getElementById('groupLogo').click();">
+                <strong>Click to upload your project logo</strong><br>
+                <small class="text-muted">(optional)</small>
+            </div>
+            <input type="file" id="groupLogo" class="form-control d-none" name="logo">
+        </div>
+
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

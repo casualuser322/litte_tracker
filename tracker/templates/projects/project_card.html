@@ -8,16 +8,6 @@
             <small class="text-muted">{{ project.members.count }} members</small>
         </div>
     </a>
-
-    {% if is_owner %}
-    <form method="post" action="" class="ms-3 mb-0 flex-shrink-0"> <!-- TODO a{a%a url 'group_delete' group.id a%a}a -->
-        {% csrf_token %}
-        <button type="submit" class="btn btn-sm btn-outline-danger"
-                onclick="return confirm('Are you sure you want to delete this group?');">
-            Delete
-        </button>
-    </form>
-    {% endif %}
 </div>
 
 
