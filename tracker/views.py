@@ -445,13 +445,15 @@ def update_task_ajax(request, project_id, ticket_id, task_id):
         try:
             task = SubTask.objects.get(id=task_id, ticket_id=ticket_id)
             data = json.loads(request.body)
-            task.is_done = data.get('completed', False)
+            task.is_done = data.get("completed", False)
             task.save()
-            return JsonResponse({'status': 'success'})
+            return JsonResponse({"status": "success"})
         except SubTask.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Task not found'}, status=404)
-        
-    return JsonResponse({'status': 'error'}, status=400)
+            return JsonResponse(
+                {"status": "error", "message": "Task not found"}, status=404
+            )
+
+    return JsonResponse({"status": "error"}, status=400)
 
 
 @login_required
@@ -533,7 +535,9 @@ def ticket_detail(request, project_id, ticket_id, project):  # TODO Decopose
             if form.is_valid():
                 form.save()
                 messages.success(request, "Ticket updated successfully!")
-                return redirect("ticket_detail", project_id=project_id, ticket_id=ticket.id)
+                return redirect(
+                    "ticket_detail", project_id=project_id, ticket_id=ticket.id
+                )
 
     return render(
         request,
@@ -577,6 +581,7 @@ def create_ticket(request, project_id, project):
         },
     )
 
+
 @login_required
 @project_access_required
 def update_ticket(request, project_id, ticket_id, project=None):
@@ -606,6 +611,7 @@ def update_ticket(request, project_id, ticket_id, project=None):
             "ticket": ticket,
         },
     )
+
 
 def index(request):
     user = request.user

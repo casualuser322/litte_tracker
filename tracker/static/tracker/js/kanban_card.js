@@ -58,10 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const taskId = draggedCard.dataset.taskId;
             const newStatus = column.dataset.status;
 
-            // Move card visually first
             column.appendChild(draggedCard);
 
-            // Check if we have a valid CSRF token
             if (!csrftoken) {
                 console.error('CSRF token not available');
                 revertCardMove();
