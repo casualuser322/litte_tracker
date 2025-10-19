@@ -65,7 +65,7 @@ urlpatterns = [
         name="ticket_detail",
     ),
     path(
-        "tickets/<int:project_id>/update/<int:ticket_id>",
+        "tickets/update/<int:ticket_id>/",
         view=views.update_ticket,
         name="update_ticket",
     ),
@@ -75,7 +75,7 @@ urlpatterns = [
         name="add_subtask",
     ),
     path(
-        "tickets/<int:project_id>/<int:ticket_id>/update_status/",
+        "tickets/<int:project_id>/<int:ticket_id>/update_status/<int:pk>/",
         views.update_task_ajax,
         name="update_task_ajax",
     ),

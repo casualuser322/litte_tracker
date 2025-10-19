@@ -172,7 +172,7 @@ class TestTrackerView:
 
         url = reverse(
             "update_task_ajax",
-            args=(self.ticket.id, self.project.id, self.task.id),
+            args=(self.project.id, self.ticket.id, self.task.id),
         )
 
         response = client.post(
@@ -182,7 +182,8 @@ class TestTrackerView:
         )
 
         assert response.status_code == 200
-        self.task.refresh_from_db()
+        self.ticket.refresh_from_db()
+        assert self.ticket.status == "done"
 
     def test_add_subtask_view(self, client):
         client.force_login(self.user)
