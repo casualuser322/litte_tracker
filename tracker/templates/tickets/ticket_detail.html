@@ -64,10 +64,12 @@
                 <script>
                 document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
                     cb.addEventListener('change', function() {
-                        const ticketId = this.dataset.ticket;
+                        const projectId = "{{ project.id }}";
+                        const ticketId = "{{ ticket.id }}";
                         const taskId = this.dataset.task;
 
-                        const url = "{% url 'update_task_ajax' ticket_id=0 pk=0 %}"
+                        const url = "{% url 'update_task_ajax' 0 0 0 %}"
+                            .replace("0", projectId)
                             .replace("0", ticketId)
                             .replace("0", taskId);
 

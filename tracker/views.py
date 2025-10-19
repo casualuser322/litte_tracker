@@ -438,31 +438,20 @@ def add_subtask(request, ticket_id):
     )
 
 
-@require_POST
 @login_required
 @project_access_required
-def update_task_ajax(request, project_id, ticket_id, task_id, project=None):
-    ticket = get_object_or_404(Ticket, id=ticket_id, project_id=project_id)
-
-    data = json.loads(request.body)
-    new_status = data.get("status")
-
-    valid_statuses = ["todo", "in_progress", "in_review", "done"]
-    if new_status not in valid_statuses:
-        return JsonResponse(
-            {"success": False, "error": "Invalid status"}, status=400
-        )
-
-    ticket.status = new_status
-    ticket.save()
-
-    return JsonResponse(
-        {
-            "success": True,
-            "status": ticket.status,
-            "status_display": ticket.get_status_display(),
-        }
-    )
+def update_task_ajax(request, project_id, ticket_id, task_id):
+    if request.method == "POST":
+        try:
+            task = SubTask.objects.get(id=task_id, ticket_id=ticket_id)
+            data = json.loads(request.body)
+            task.is_done = data.get('completed', False)
+            task.save()
+            return JsonResponse({'status': 'success'})
+        except SubTask.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Task not found'}, status=404)
+        
+    return JsonResponse({'status': 'error'}, status=400)
 
 
 @login_required
@@ -544,9 +533,7 @@ def ticket_detail(request, project_id, ticket_id, project):  # TODO Decopose
             if form.is_valid():
                 form.save()
                 messages.success(request, "Ticket updated successfully!")
-                return redirect(
-                    "ticket_detail", project_id=project_id, ticket_id=ticket.id
-                )
+                return redirect("ticket_detail", project_id=project_id, ticket_id=ticket.id)
 
     return render(
         request,
